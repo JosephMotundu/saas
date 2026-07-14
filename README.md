@@ -23,8 +23,11 @@ L'application est disponible sur http://localhost:8000.
 
 ## Démarrage en local sans Docker (SQLite)
 
+Nécessite **Python 3.12** (Django 5 n'est pas compatible avec des versions plus
+récentes de Python, ex. 3.14, sous le client de test Django).
+
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3.12 -m venv .venv && source .venv/bin/activate
 pip install -r requirements/dev.txt
 cp .env.example .env
 # éditer .env : DATABASE_URL=sqlite:///db.sqlite3
@@ -52,5 +55,9 @@ requirements/     dépendances (base / dev / prod)
 
 ## État d'avancement
 
-Le projet est construit par étapes (voir brief). Étape courante : scaffolding
-initial (settings dev/prod, Docker, PostgreSQL, Git).
+Le projet est construit par étapes (voir brief).
+
+- ✅ Étape 1 — scaffolding (settings dev/prod, Docker, PostgreSQL, Git)
+- ✅ Étape 2 — app `comptes` : modèles `Paroisse`/`Utilisateur`, groupes de
+  rôles (Curé, Secrétaire, Trésorier, Lecteur), connexion/déconnexion, admin
+- ⏳ Étape 3 — middleware et managers multi-tenant

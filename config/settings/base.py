@@ -42,7 +42,9 @@ THIRD_PARTY_APPS = [
 ]
 
 # Les apps métier sont ajoutées ici au fil des étapes (comptes, paroissiens, ...).
-LOCAL_APPS = []
+LOCAL_APPS = [
+    "apps.comptes",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -86,7 +88,7 @@ DATABASES = {
     )
 }
 
-# AUTH_USER_MODEL sera défini à l'étape 2 (app comptes) avant toute migration.
+AUTH_USER_MODEL = "comptes.Utilisateur"
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -111,7 +113,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "comptes:connexion"
 LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "comptes:connexion"
+# Pas de LOGOUT_REDIRECT_URL : LogoutView affiche la page de confirmation
+# comptes/deconnexion.html plutôt que de rediriger directement.
 
 # Django REST Framework
 REST_FRAMEWORK = {

@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+from apps.comptes.managers import creer_manager_paroisse
 from apps.comptes.models import Paroisse
 
 
@@ -11,6 +12,8 @@ class Famille(models.Model):
     paroisse = models.ForeignKey(
         Paroisse, verbose_name="paroisse", related_name="familles", on_delete=models.PROTECT
     )
+
+    objects = creer_manager_paroisse()
 
     class Meta:
         verbose_name = "famille"
@@ -49,6 +52,8 @@ class Paroissien(models.Model):
     paroisse = models.ForeignKey(
         Paroisse, verbose_name="paroisse", related_name="paroissiens", on_delete=models.PROTECT
     )
+
+    objects = creer_manager_paroisse()
 
     class Meta:
         verbose_name = "paroissien"

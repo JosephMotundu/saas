@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.comptes.managers import creer_manager_paroisse
 from apps.comptes.models import Paroisse
 from apps.paroissiens.models import Paroissien
 
@@ -40,6 +41,8 @@ class Don(models.Model):
         Paroisse, verbose_name="paroisse", related_name="dons", on_delete=models.PROTECT
     )
 
+    objects = creer_manager_paroisse()
+
     class Meta:
         verbose_name = "don"
         verbose_name_plural = "dons"
@@ -59,6 +62,8 @@ class RecuFiscal(models.Model):
     )
     numero = models.CharField("numéro", max_length=30, editable=False, blank=True)
     date_emission = models.DateField("date d'émission", default=timezone.now)
+
+    objects = creer_manager_paroisse("don__paroisse")
 
     class Meta:
         verbose_name = "reçu fiscal"

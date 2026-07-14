@@ -11,6 +11,17 @@ class ParoisseAdmin(admin.ModelAdmin):
     list_filter = ("diocese", "ville")
     ordering = ("nom",)
 
+    def get_queryset(self, request):
+        """Paroisse et Utilisateur ne portent pas eux-mêmes de manager
+        multi-tenant automatique (Paroisse EST le tenant, et Utilisateur
+        est consulté pendant l'authentification, avant qu'une paroisse
+        courante ne soit connue) : l'isolation est donc appliquée ici,
+        explicitement, au niveau de l'admin — §4 du brief."""
+        queryset = super().get_queryset(request)
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(pk=request.user.paroisse_id)
+
 
 @admin.register(Utilisateur)
 class UtilisateurAdmin(UserAdmin):
@@ -30,3 +41,9 @@ class UtilisateurAdmin(UserAdmin):
     @admin.display(description="nom complet")
     def get_full_name(self, obj):
         return obj.get_full_name() or "—"
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(paroisse=request.user.paroisse)

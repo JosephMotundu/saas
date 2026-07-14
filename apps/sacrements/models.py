@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.comptes.managers import creer_manager_paroisse
 from apps.comptes.models import Paroisse
 from apps.paroissiens.models import Paroissien
 
@@ -25,6 +26,8 @@ class ActeBase(models.Model):
     celebrant = models.CharField("célébrant", max_length=200)
     paroisse = models.ForeignKey(Paroisse, verbose_name="paroisse", on_delete=models.PROTECT)
     date_enregistrement = models.DateTimeField("date d'enregistrement", auto_now_add=True)
+
+    objects = creer_manager_paroisse()
 
     class Meta:
         abstract = True
@@ -182,6 +185,8 @@ class MentionMarginale(models.Model):
     date = models.DateField("date")
     reference = models.CharField("référence", max_length=200, blank=True)
     paroisse = models.ForeignKey(Paroisse, verbose_name="paroisse", on_delete=models.PROTECT)
+
+    objects = creer_manager_paroisse()
 
     class Meta:
         verbose_name = "mention marginale"

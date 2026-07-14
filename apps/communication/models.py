@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.urls import reverse
 
+from apps.comptes.managers import creer_manager_paroisse
 from apps.comptes.models import Paroisse
 
 
@@ -27,6 +28,8 @@ class Annonce(models.Model):
     paroisse = models.ForeignKey(
         Paroisse, verbose_name="paroisse", related_name="annonces", on_delete=models.PROTECT
     )
+
+    objects = creer_manager_paroisse()
 
     class Meta:
         verbose_name = "annonce"

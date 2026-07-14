@@ -2,20 +2,22 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 class FiltrageParoisseMixin(LoginRequiredMixin):
-    """Isole les données par paroisse tant que le manager/middleware
-    multi-tenant (étape suivante du plan) n'existe pas encore.
+    """Isole les données par paroisse au niveau de la vue.
 
-    Filtre le queryset des vues de liste/détail sur la paroisse de
-    l'utilisateur connecté, et rattache automatiquement tout objet créé à
-    cette même paroisse.
+    Le manager par défaut de chaque modèle métier (apps.comptes.managers)
+    filtre déjà automatiquement sur la paroisse courante — posée par
+    ParoisseCouranteMiddleware sur `request.paroisse`. Ce mixin ajoute un
+    filtrage explicite, redondant par construction : une défense en
+    profondeur, pas le seul rempart. Il reste aussi responsable de
+    rattacher tout objet créé à la paroisse courante.
     """
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(paroisse=self.request.user.paroisse)
+        return queryset.filter(paroisse=self.request.paroisse)
 
     def form_valid(self, form):
-        form.instance.paroisse = self.request.user.paroisse
+        form.instance.paroisse = self.request.paroisse
         return super().form_valid(form)
 
 

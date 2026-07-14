@@ -53,6 +53,29 @@ static/           assets front (CSS custom surchargeant Bootstrap 5)
 requirements/     dépendances (base / dev / prod)
 ```
 
+## Architecture multi-tenant
+
+1. `ParoisseCouranteMiddleware` (`apps/comptes/middleware.py`) détermine la
+   paroisse de l'utilisateur connecté à chaque requête et l'expose sur
+   `request.paroisse`.
+2. Il alimente aussi une `ContextVar` (`apps/comptes/contexte.py`), lue par
+   `creer_manager_paroisse()` (`apps/comptes/managers.py`) : le manager par
+   défaut (`objects`) de chaque modèle métier (paroissiens, sacrements,
+   célébrations, finances, communication) filtre donc **automatiquement**
+   sur la paroisse courante, y compris dans le Django Admin (qui utilise ce
+   même manager par défaut).
+3. Un superadmin (`paroisse=None`) n'est jamais filtré : il gère plusieurs
+   paroisses par conception.
+4. Hors requête (migrations, shell, commandes, tests unitaires appelant les
+   modèles directement), aucune paroisse courante n'est définie : le manager
+   ne filtre rien, pour ne pas gêner ces usages légitimes.
+5. Les vues ajoutent un filtrage explicite (`FiltrageParoisseMixin`) en plus
+   du manager : défense en profondeur, pas le seul rempart.
+6. `Paroisse` et `Utilisateur` n'ont volontairement pas ce manager auto-
+   filtrant (`Paroisse` EST le tenant ; `Utilisateur` est consulté pendant
+   l'authentification, avant qu'une paroisse courante ne soit connue) — leur
+   isolation dans l'admin est donc explicite, voir `apps/comptes/admin.py`.
+
 ## État d'avancement
 
 Le projet est construit par étapes (voir brief).
@@ -71,9 +94,12 @@ Le projet est construit par étapes (voir brief).
 - ✅ Étape 6 — app `celebrations` : célébrations et intentions de messe
 - ✅ Étape 7 — app `finances` : dons et reçus fiscaux (création atomique)
 - ✅ Étape 8 — app `communication` : annonces paroissiales
-- ⏳ Étape 3 — middleware et managers multi-tenant (l'isolation par
-  paroisse est assurée pour l'instant par `FiltrageParoisseMixin` dans
-  chaque vue, en attendant le manager par défaut)
+- ✅ Étape 3 — middleware et managers multi-tenant : `ParoisseCouranteMiddleware`
+  expose `request.paroisse` et alimente une ContextVar lue par un manager par
+  défaut appliqué à tous les modèles métier, qui filtre automatiquement sur
+  la paroisse courante (y compris dans le Django Admin). `Paroisse` et
+  `Utilisateur` sont isolés explicitement dans leurs `ModelAdmin` (raisons
+  détaillées dans `apps/comptes/managers.py` et `apps/comptes/admin.py`).
 - ⏳ Étape 9 — API DRF + JWT + géocodage Nominatim
 - ⏳ Étape 10 — 2FA TOTP
 - ⏳ Étape 11 — Admin complet pour toutes les entités, commandes `seed`/`backup`

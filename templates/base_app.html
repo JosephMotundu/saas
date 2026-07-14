@@ -15,19 +15,44 @@
           </a>
         </li>
         {% if nav_paroissiens %}
-        <li><span class="onglet onglet--a-venir">Paroissiens<small>Bientôt disponible</small></span></li>
+        <li>
+          <a href="{% url 'paroissiens:paroissien_liste' %}"
+             class="{% if request.resolver_match.app_name == 'paroissiens' %}est-actif{% endif %}">
+            Paroissiens
+          </a>
+        </li>
         {% endif %}
         {% if nav_sacrements %}
-        <li><span class="onglet onglet--a-venir">Sacrements<small>Bientôt disponible</small></span></li>
+        <li>
+          <a href="{% url 'sacrements:index' %}"
+             class="{% if request.resolver_match.app_name == 'sacrements' %}est-actif{% endif %}">
+            Sacrements
+          </a>
+        </li>
         {% endif %}
         {% if nav_celebrations %}
-        <li><span class="onglet onglet--a-venir">Célébrations<small>Bientôt disponible</small></span></li>
+        <li>
+          <a href="{% url 'celebrations:celebration_liste' %}"
+             class="{% if request.resolver_match.app_name == 'celebrations' %}est-actif{% endif %}">
+            Célébrations
+          </a>
+        </li>
         {% endif %}
         {% if nav_finances %}
-        <li><span class="onglet onglet--a-venir">Finances<small>Bientôt disponible</small></span></li>
+        <li>
+          <a href="{% url 'finances:don_liste' %}"
+             class="{% if request.resolver_match.app_name == 'finances' %}est-actif{% endif %}">
+            Finances
+          </a>
+        </li>
         {% endif %}
         {% if nav_communication %}
-        <li><span class="onglet onglet--a-venir">Communication<small>Bientôt disponible</small></span></li>
+        <li>
+          <a href="{% url 'communication:annonce_liste' %}"
+             class="{% if request.resolver_match.app_name == 'communication' %}est-actif{% endif %}">
+            Communication
+          </a>
+        </li>
         {% endif %}
       </ul>
     </nav>

@@ -18,21 +18,21 @@
     <span class="compteur__libelle">Utilisateurs de la paroisse</span>
   </div>
   {% if nav_paroissiens %}
-  <div class="compteur compteur--a-venir">
-    <span class="compteur__valeur numerique">—</span>
-    <span class="compteur__libelle">Paroissiens (module à venir)</span>
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ nombre_paroissiens }}</span>
+    <span class="compteur__libelle">Paroissiens</span>
   </div>
   {% endif %}
   {% if nav_sacrements %}
-  <div class="compteur compteur--a-venir">
-    <span class="compteur__valeur numerique">—</span>
-    <span class="compteur__libelle">Actes sacramentels (module à venir)</span>
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ nombre_actes_sacrements }}</span>
+    <span class="compteur__libelle">Actes sacramentels</span>
   </div>
   {% endif %}
   {% if nav_finances %}
-  <div class="compteur compteur--a-venir">
-    <span class="compteur__valeur numerique">—</span>
-    <span class="compteur__libelle">Dons enregistrés (module à venir)</span>
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ nombre_dons }}</span>
+    <span class="compteur__libelle">Dons enregistrés</span>
   </div>
   {% endif %}
 </div>

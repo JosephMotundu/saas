@@ -1,0 +1,41 @@
+{% extends "base_app.html" %}
+
+{% block title %}Sacrements — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Registres sacramentels</h1>
+<p class="sous-titre">Chaque registre porte sa propre numérotation d'acte.</p>
+
+<div class="row g-4">
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="carte">
+      <h3>Baptêmes</h3>
+      <a class="bouton-secondaire" href="{% url 'sacrements:bapteme_liste' %}">Ouvrir le registre</a>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="carte">
+      <h3>Communions</h3>
+      <a class="bouton-secondaire" href="{% url 'sacrements:communion_liste' %}">Ouvrir le registre</a>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="carte">
+      <h3>Confirmations</h3>
+      <a class="bouton-secondaire" href="{% url 'sacrements:confirmation_liste' %}">Ouvrir le registre</a>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="carte">
+      <h3>Mariages</h3>
+      <a class="bouton-secondaire" href="{% url 'sacrements:mariage_liste' %}">Ouvrir le registre</a>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="carte">
+      <h3>Funérailles</h3>
+      <a class="bouton-secondaire" href="{% url 'sacrements:funerailles_liste' %}">Ouvrir le registre</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

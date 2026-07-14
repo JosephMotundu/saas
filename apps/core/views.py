@@ -2,6 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView, TemplateView
 
 from apps.comptes.models import Utilisateur
+from apps.finances.models import Don
+from apps.paroissiens.models import Paroissien
+from apps.sacrements.models import Bapteme, Communion, Confirmation, Funerailles, Mariage
 
 from .forms import OFFRES, SouscriptionForm
 
@@ -48,7 +51,19 @@ class TableauDeBordView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         paroisse = self.request.user.paroisse
         context["paroisse"] = paroisse
-        context["nombre_utilisateurs"] = (
-            Utilisateur.objects.filter(paroisse=paroisse).count() if paroisse else 0
+
+        if paroisse is None:
+            context["nombre_utilisateurs"] = 0
+            context["nombre_paroissiens"] = 0
+            context["nombre_actes_sacrements"] = 0
+            context["nombre_dons"] = 0
+            return context
+
+        context["nombre_utilisateurs"] = Utilisateur.objects.filter(paroisse=paroisse).count()
+        context["nombre_paroissiens"] = Paroissien.objects.filter(paroisse=paroisse).count()
+        context["nombre_actes_sacrements"] = sum(
+            modele.objects.filter(paroisse=paroisse).count()
+            for modele in (Bapteme, Communion, Confirmation, Funerailles, Mariage)
         )
+        context["nombre_dons"] = Don.objects.filter(paroisse=paroisse).count()
         return context

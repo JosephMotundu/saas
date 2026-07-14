@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import CreateView, DetailView, ListView, UpdateView, View
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView, View
 
 from apps.comptes.mixins import FiltrageParoisseMixin, RoleRequisMixin
 
@@ -16,6 +16,11 @@ from .models import Bapteme, Communion, Confirmation, Funerailles, Mariage
 
 ROLES_LECTURE = ("Secrétaire", "Lecteur")
 ROLES_ECRITURE = ("Secrétaire",)
+
+
+class SacrementsIndexView(RoleRequisMixin, TemplateView):
+    template_name = "sacrements/index.html"
+    roles_autorises = ROLES_LECTURE
 
 
 class ActePersonnelMixin:

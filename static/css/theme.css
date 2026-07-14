@@ -527,8 +527,7 @@ a:hover {
   margin-bottom: 0.2rem;
 }
 
-.onglets-missel a,
-.onglet {
+.onglets-missel a {
   display: block;
   padding: 0.6rem 0.85rem;
   border-radius: var(--rayon);
@@ -546,17 +545,6 @@ a:hover {
   background: var(--papier-releve);
   border-left-color: var(--accent);
   color: var(--brand);
-}
-
-.onglet--a-venir {
-  color: var(--encre-attenuee);
-  cursor: default;
-}
-
-.onglet--a-venir small {
-  display: block;
-  font-weight: 400;
-  font-size: 0.75rem;
 }
 
 .zone-app {
@@ -657,10 +645,6 @@ a:hover {
 .compteur__libelle {
   color: var(--encre-attenuee);
   font-size: 0.9rem;
-}
-
-.compteur--a-venir .compteur__valeur {
-  color: var(--encre-attenuee);
 }
 
 .carte-paroisse {

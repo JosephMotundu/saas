@@ -1,0 +1,18 @@
+{% extends "base_app.html" %}
+
+{% block title %}{% if object %}Modifier{% else %}Publier{% endif %} une annonce — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Modifier l'annonce{% else %}Publier une annonce{% endif %}</h1>
+
+<form method="post" novalidate class="fiche">
+  {% csrf_token %}
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'communication:annonce_liste' %}">Annuler</a>
+    <button type="submit" class="bouton-principal">Publier</button>
+  </div>
+</form>
+{% endblock %}

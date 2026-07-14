@@ -1,0 +1,48 @@
+{% extends "base_app.html" %}
+
+{% block title %}Annonces — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Annonces</h1>
+  <a class="bouton-principal" href="{% url 'communication:annonce_creer' %}">Publier une annonce</a>
+</div>
+
+{% if annonces %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Titre</th>
+      <th scope="col">Date de publication</th>
+      <th scope="col">Destinataires</th>
+      <th scope="col">Auteur</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for annonce in annonces %}
+    <tr>
+      <td><a href="{% url 'communication:annonce_detail' annonce.pk %}">{{ annonce.titre }}</a></td>
+      <td class="numerique">{{ annonce.date_publication }}</td>
+      <td>{{ annonce.groupe_cible|default:"Toute la paroisse" }}</td>
+      <td>{{ annonce.auteur.get_full_name|default:annonce.auteur.username }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucune annonce pour l'instant. Publiez la première.</p>
+{% endif %}
+{% endblock %}

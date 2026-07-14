@@ -1,0 +1,22 @@
+{% extends "base_app.html" %}
+
+{% block title %}{{ annonce.titre }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>{{ annonce.titre }}</h1>
+<p class="sous-titre">
+  Publiée le <span class="numerique">{{ annonce.date_publication }}</span>
+  par {{ annonce.auteur.get_full_name|default:annonce.auteur.username }}
+  &mdash; {{ annonce.groupe_cible|default:"toute la paroisse" }}
+</p>
+
+<div class="fiche">
+  <p>{{ annonce.contenu|linebreaks }}</p>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'communication:annonce_liste' %}">Retour à la liste</a>
+  <a class="bouton-principal" href="{% url 'communication:annonce_modifier' annonce.pk %}">Modifier</a>
+  <a class="bouton-danger" href="{% url 'communication:annonce_supprimer' annonce.pk %}">Supprimer</a>
+</div>
+{% endblock %}

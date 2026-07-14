@@ -1,0 +1,42 @@
+{% extends "base_app.html" %}
+
+{% block title %}Famille {{ famille.nom }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Famille {{ famille.nom }}</h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Adresse</dt>
+    <dd>{{ famille.adresse|default:"—" }}</dd>
+    <dt>Téléphone</dt>
+    <dd>{{ famille.telephone|default:"—" }}</dd>
+  </dl>
+</div>
+
+<h2>Membres</h2>
+{% if famille.membres.all %}
+<table class="table-registre">
+  <thead>
+    <tr><th scope="col">Nom</th><th scope="col">Prénom</th><th scope="col">Sexe</th></tr>
+  </thead>
+  <tbody>
+    {% for membre in famille.membres.all %}
+    <tr>
+      <td><a href="{% url 'paroissiens:paroissien_detail' membre.pk %}">{{ membre.nom }}</a></td>
+      <td>{{ membre.prenom }}</td>
+      <td>{{ membre.get_sexe_display }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="etat-vide">Aucun membre rattaché pour l'instant.</p>
+{% endif %}
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'paroissiens:famille_liste' %}">Retour à la liste</a>
+  <a class="bouton-principal" href="{% url 'paroissiens:famille_modifier' famille.pk %}">Modifier</a>
+  <a class="bouton-danger" href="{% url 'paroissiens:famille_supprimer' famille.pk %}">Supprimer</a>
+</div>
+{% endblock %}

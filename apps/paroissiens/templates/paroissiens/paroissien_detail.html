@@ -1,0 +1,36 @@
+{% extends "base_app.html" %}
+
+{% block title %}{{ paroissien.nom_complet }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>{{ paroissien.prenom }} {{ paroissien.nom }}</h1>
+</div>
+
+<div class="fiche">
+  <dl>
+    <dt>Sexe</dt>
+    <dd>{{ paroissien.get_sexe_display }}</dd>
+    <dt>Date de naissance</dt>
+    <dd class="numerique">{{ paroissien.date_naissance|default:"Non renseignée" }}</dd>
+    <dt>Adresse</dt>
+    <dd>{{ paroissien.adresse|default:"—" }}</dd>
+    <dt>Téléphone</dt>
+    <dd>{{ paroissien.telephone|default:"—" }}</dd>
+    <dt>Email</dt>
+    <dd>{{ paroissien.email|default:"—" }}</dd>
+    <dt>Famille</dt>
+    <dd>
+      {% if paroissien.famille %}
+        <a href="{% url 'paroissiens:famille_detail' paroissien.famille.pk %}">{{ paroissien.famille.nom }}</a>
+      {% else %}Aucune famille rattachée{% endif %}
+    </dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'paroissiens:paroissien_liste' %}">Retour à la liste</a>
+  <a class="bouton-principal" href="{% url 'paroissiens:paroissien_modifier' paroissien.pk %}">Modifier</a>
+  <a class="bouton-danger" href="{% url 'paroissiens:paroissien_supprimer' paroissien.pk %}">Supprimer</a>
+</div>
+{% endblock %}

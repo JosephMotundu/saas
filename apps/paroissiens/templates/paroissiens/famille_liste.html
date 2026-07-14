@@ -1,0 +1,49 @@
+{% extends "base_app.html" %}
+
+{% block title %}Familles — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Familles</h1>
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'paroissiens:paroissien_liste' %}">Paroissiens</a>
+    <a class="bouton-principal" href="{% url 'paroissiens:famille_creer' %}">Ajouter une famille</a>
+  </div>
+</div>
+
+{% if familles %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Nom</th>
+      <th scope="col">Adresse</th>
+      <th scope="col">Téléphone</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for famille in familles %}
+    <tr>
+      <td><a href="{% url 'paroissiens:famille_detail' famille.pk %}">{{ famille.nom }}</a></td>
+      <td>{{ famille.adresse|default:"—" }}</td>
+      <td>{{ famille.telephone|default:"—" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucune famille pour l'instant. Ajoutez la première.</p>
+{% endif %}
+{% endblock %}

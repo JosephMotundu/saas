@@ -1,0 +1,18 @@
+{% extends "base_app.html" %}
+
+{% block title %}Supprimer la famille {{ object.nom }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Supprimer cette famille ?</h1>
+<div class="fiche">
+  <p>Voulez-vous vraiment supprimer la famille <strong>{{ object.nom }}</strong> ? Les
+    paroissiens rattachés ne seront pas supprimés, seulement détachés de cette famille.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="actions-fiche">
+      <a class="bouton-secondaire" href="{% url 'paroissiens:famille_detail' object.pk %}">Annuler</a>
+      <button type="submit" class="bouton-danger">Confirmer la suppression</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

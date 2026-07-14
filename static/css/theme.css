@@ -678,3 +678,208 @@ a:hover {
   text-align: center;
   color: var(--encre-attenuee);
 }
+
+/* ---------- Registres (listes, fiches) ---------- */
+
+.barre-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.barre-actions h1 {
+  margin: 0;
+}
+
+.table-registre {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  overflow: hidden;
+}
+
+.table-registre th,
+.table-registre td {
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--filet);
+  text-align: left;
+}
+
+.table-registre th {
+  font-weight: 600;
+  background: var(--papier-releve);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--encre-attenuee);
+}
+
+.table-registre tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-registre tbody tr:hover {
+  background: var(--papier-releve);
+}
+
+.table-registre a {
+  font-weight: 600;
+}
+
+.etat-vide {
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--encre-attenuee);
+  background: #fff;
+  border: 1px dashed var(--filet);
+  border-radius: var(--rayon);
+}
+
+.fiche {
+  background: #fff;
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.fiche dl {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: 0.6rem 1rem;
+  margin: 0;
+}
+
+.fiche dt {
+  font-weight: 600;
+  color: var(--encre-attenuee);
+}
+
+.fiche dd {
+  margin: 0;
+}
+
+@media (max-width: 40rem) {
+  .fiche dl {
+    grid-template-columns: 1fr;
+  }
+
+  .fiche dt {
+    margin-top: 0.75rem;
+  }
+}
+
+.pagination-registre {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.etiquette {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--filet);
+  background: var(--papier-releve);
+}
+
+.actions-fiche {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.bouton-danger {
+  display: inline-block;
+  border: 1px solid var(--liturgique-rouge);
+  border-radius: var(--rayon);
+  background: transparent;
+  color: var(--liturgique-rouge);
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.bouton-danger:hover {
+  background: #f4e6e4;
+  color: var(--liturgique-rouge);
+}
+
+/* Certificats imprimables */
+
+.certificat {
+  max-width: 40rem;
+  margin: 2rem auto;
+  background: #fff;
+  border: 1px solid var(--filet);
+  padding: 3rem;
+}
+
+.certificat__entete {
+  text-align: center;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.certificat__numero {
+  font-variant-numeric: tabular-nums;
+  color: var(--encre-attenuee);
+  font-size: 0.9rem;
+}
+
+.certificat dl {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: 0.6rem 1rem;
+}
+
+.certificat dt {
+  font-weight: 600;
+  color: var(--encre-attenuee);
+}
+
+.certificat dd {
+  margin: 0;
+}
+
+.certificat__pied {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--filet);
+  font-size: 0.85rem;
+  color: var(--encre-attenuee);
+  text-align: center;
+}
+
+.actions-impression {
+  max-width: 40rem;
+  margin: 1rem auto;
+  text-align: right;
+}
+
+@media print {
+  .barre-laterale,
+  .barre-superieure,
+  .entete-publique,
+  .pied-de-page,
+  .actions-impression {
+    display: none !important;
+  }
+
+  .certificat {
+    border: none;
+    margin: 0;
+    box-shadow: none;
+  }
+}

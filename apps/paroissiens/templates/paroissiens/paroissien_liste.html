@@ -1,0 +1,57 @@
+{% extends "base_app.html" %}
+
+{% block title %}Paroissiens — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Paroissiens</h1>
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'paroissiens:famille_liste' %}">Familles</a>
+    <a class="bouton-principal" href="{% url 'paroissiens:paroissien_creer' %}">Ajouter un paroissien</a>
+  </div>
+</div>
+
+{% if paroissiens %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Nom</th>
+      <th scope="col">Prénom</th>
+      <th scope="col">Sexe</th>
+      <th scope="col">Date de naissance</th>
+      <th scope="col">Famille</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for paroissien in paroissiens %}
+    <tr>
+      <td><a href="{% url 'paroissiens:paroissien_detail' paroissien.pk %}">{{ paroissien.nom }}</a></td>
+      <td>{{ paroissien.prenom }}</td>
+      <td>{{ paroissien.get_sexe_display }}</td>
+      <td class="numerique">{{ paroissien.date_naissance|default:"—" }}</td>
+      <td>
+        {% if paroissien.famille %}
+          <a href="{% url 'paroissiens:famille_detail' paroissien.famille.pk %}">{{ paroissien.famille.nom }}</a>
+        {% else %}—{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucun paroissien pour l'instant. Ajoutez le premier.</p>
+{% endif %}
+{% endblock %}

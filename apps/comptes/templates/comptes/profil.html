@@ -1,0 +1,31 @@
+{% extends "base_app.html" %}
+
+{% block title %}Mon compte — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Mon compte</h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Nom d'utilisateur</dt>
+    <dd>{{ user.username }}</dd>
+    <dt>Nom complet</dt>
+    <dd>{{ user.get_full_name|default:"Non renseigné" }}</dd>
+    <dt>Email</dt>
+    <dd>{{ user.email|default:"—" }}</dd>
+    <dt>Paroisse</dt>
+    <dd>{{ user.paroisse.nom|default:"Aucune (superadministrateur)" }}</dd>
+    <dt>Rôle</dt>
+    <dd>
+      {% if user.is_superuser %}Superadministrateur{% endif %}
+      {% for role in roles %}<span class="etiquette">{{ role }}</span>{% endfor %}
+      {% if not roles and not user.is_superuser %}Aucun rôle attribué{% endif %}
+    </dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'comptes:profil_modifier' %}">Modifier mon profil</a>
+  <a class="bouton-secondaire" href="{% url 'comptes:mot_de_passe_modifier' %}">Changer mon mot de passe</a>
+</div>
+{% endblock %}

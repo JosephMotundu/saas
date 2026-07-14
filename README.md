@@ -85,8 +85,8 @@ Le projet est construit par étapes (voir brief).
   rôles (Curé, Secrétaire, Trésorier, Lecteur), connexion/déconnexion, admin
 - ✅ Fondations des templates — `theme.css` (design tokens + surcharge
   Bootstrap), `base.html`/`base_public.html`/`base_app.html`, app `core`
-  (vitrine publique : accueil, fonctionnalités, tarifs, souscription
-  simulée ; tableau de bord avec carte Leaflet et compteurs)
+  (vitrine publique : accueil, fonctionnalités, tarifs ; tableau de bord
+  avec carte Leaflet et compteurs)
 - ✅ Étape 4 — app `paroissiens` : `Famille`/`Paroissien`, CRUD complet
 - ✅ Étape 5 — app `sacrements` : Baptême/Communion/Confirmation/Mariage/
   Funérailles, numérotation d'acte par paroisse, mentions marginales,
@@ -100,6 +100,21 @@ Le projet est construit par étapes (voir brief).
   la paroisse courante (y compris dans le Django Admin). `Paroisse` et
   `Utilisateur` sont isolés explicitement dans leurs `ModelAdmin` (raisons
   détaillées dans `apps/comptes/managers.py` et `apps/comptes/admin.py`).
+- ✅ Conventions SaaS (hors plan initial, avant les étapes 9-11) :
+  - **Inscription self-service** (`/souscription/`) : crée réellement la
+    `Paroisse`, son `Abonnement` et le compte du premier Curé (transaction
+    atomique), puis connecte directement l'utilisateur. Remplace l'ancienne
+    page de démonstration qui ne persistait rien.
+  - **Mon compte** (`comptes:profil`) : modifier son profil, changer son
+    mot de passe (vues Django standard, gabarits ré-habillés).
+  - **Équipe** (`comptes:equipe`) : le Curé invite un collaborateur
+    (Secrétaire/Trésorier/Lecteur/Curé) — mot de passe temporaire généré
+    côté serveur, jamais choisi par l'inviteur, affiché une seule fois ; le
+    Curé peut aussi désactiver/réactiver un membre (jamais lui-même).
+  - **Abonnement** (`comptes:abonnement`) : changer d'offre ou annuler/
+    réactiver l'abonnement de la paroisse. Modèle `Abonnement`
+    (`apps/comptes/models.py`), bien distinct des `Don`/`RecuFiscal` de
+    l'app finances qui sont la comptabilité *interne* de la paroisse.
 - ⏳ Étape 9 — API DRF + JWT + géocodage Nominatim
 - ⏳ Étape 10 — 2FA TOTP
 - ⏳ Étape 11 — Admin complet pour toutes les entités, commandes `seed`/`backup`

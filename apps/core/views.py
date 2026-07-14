@@ -1,12 +1,17 @@
+from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import Group
+from django.db import transaction
+from django.shortcuts import redirect
 from django.views.generic import FormView, TemplateView
 
-from apps.comptes.models import Utilisateur
+from apps.comptes.models import Abonnement, Paroisse, Utilisateur
 from apps.finances.models import Don
 from apps.paroissiens.models import Paroissien
 from apps.sacrements.models import Bapteme, Communion, Confirmation, Funerailles, Mariage
 
-from .forms import OFFRES, SouscriptionForm
+from .forms import OFFRES, InscriptionForm
 
 
 class AccueilView(TemplateView):
@@ -21,9 +26,13 @@ class TarifsView(TemplateView):
     template_name = "core/tarifs.html"
 
 
-class SouscriptionView(FormView):
+class InscriptionView(FormView):
+    """Souscription réelle : crée la paroisse, son abonnement et le compte
+    du premier Curé dans une même transaction, puis connecte directement
+    l'utilisateur. Pas de paiement — l'offre est activée immédiatement."""
+
     template_name = "core/souscription.html"
-    form_class = SouscriptionForm
+    form_class = InscriptionForm
 
     def get_initial(self):
         initial = super().get_initial()
@@ -33,15 +42,29 @@ class SouscriptionView(FormView):
         return initial
 
     def form_valid(self, form):
-        # Démonstration uniquement : aucun paiement n'est traité, aucune
-        # donnée n'est persistée. Le flux réel (sandbox) sera branché
-        # ultérieurement sans exposer de clé secrète dans le code.
-        offre_libelle = dict(OFFRES).get(form.cleaned_data["offre"], form.cleaned_data["offre"])
-        return self.render_to_response(
-            self.get_context_data(
-                form=form, confirmation=form.cleaned_data, offre_libelle=offre_libelle
+        donnees = form.cleaned_data
+        with transaction.atomic():
+            paroisse = Paroisse.objects.create(
+                nom=donnees["nom_paroisse"],
+                diocese=donnees["diocese"],
+                adresse=donnees["adresse"],
+                ville=donnees["ville"],
+                email=donnees["email"],
             )
-        )
+            Abonnement.objects.create(paroisse=paroisse, offre=donnees["offre"])
+            cure = Utilisateur.objects.create_user(
+                username=donnees["nom_utilisateur"],
+                password=donnees["mot_de_passe"],
+                first_name=donnees["prenom"],
+                last_name=donnees["nom"],
+                email=donnees["email"],
+                paroisse=paroisse,
+            )
+            cure.groups.add(Group.objects.get(name="Curé"))
+
+        login(self.request, cure)
+        messages.success(self.request, f"Bienvenue ! {paroisse.nom} est prêt.")
+        return redirect("core:tableau_de_bord")
 
 
 class TableauDeBordView(LoginRequiredMixin, TemplateView):

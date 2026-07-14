@@ -1,0 +1,25 @@
+{% extends "base_app.html" %}
+
+{% block title %}Compte créé — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Compte créé pour {{ membre.get_full_name }}</h1>
+
+<div class="fiche">
+  <p class="avis-demo">
+    Communiquez ces identifiants à {{ membre.get_full_name }} — ce mot de
+    passe temporaire ne sera plus affiché ensuite. Il pourra le changer
+    depuis « Mon compte ».
+  </p>
+  <dl>
+    <dt>Nom d'utilisateur</dt>
+    <dd class="numerique">{{ membre.username }}</dd>
+    <dt>Mot de passe temporaire</dt>
+    <dd class="numerique">{{ mot_de_passe_temporaire }}</dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-principal" href="{% url 'comptes:equipe' %}">Retour à l'équipe</a>
+</div>
+{% endblock %}

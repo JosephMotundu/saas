@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Paroisse, Utilisateur
+from .models import Abonnement, Paroisse, Utilisateur
 
 
 @admin.register(Paroisse)
@@ -21,6 +21,19 @@ class ParoisseAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return queryset
         return queryset.filter(pk=request.user.paroisse_id)
+
+
+@admin.register(Abonnement)
+class AbonnementAdmin(admin.ModelAdmin):
+    list_display = ("paroisse", "offre", "statut", "date_debut", "date_annulation")
+    list_filter = ("offre", "statut")
+    search_fields = ("paroisse__nom",)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if request.user.is_superuser:
+            return queryset
+        return queryset.filter(paroisse=request.user.paroisse)
 
 
 @admin.register(Utilisateur)

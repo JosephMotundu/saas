@@ -1,0 +1,9 @@
+{% extends "base_app.html" %}
+
+{% block title %}Mot de passe changé — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Mot de passe changé</h1>
+<p class="sous-titre">Votre mot de passe a été mis à jour avec succès.</p>
+<a class="bouton-principal" href="{% url 'comptes:profil' %}">Retour à mon compte</a>
+{% endblock %}

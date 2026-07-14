@@ -1,0 +1,18 @@
+{% extends "base_app.html" %}
+
+{% block title %}Modifier mon profil — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Modifier mon profil</h1>
+
+<form method="post" novalidate class="fiche">
+  {% csrf_token %}
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'comptes:profil' %}">Annuler</a>
+    <button type="submit" class="bouton-principal">Enregistrer</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base_app.html" %}
+
+{% block title %}Équipe — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Équipe</h1>
+  {% if est_cure %}
+  <a class="bouton-principal" href="{% url 'comptes:equipe_inviter' %}">Inviter un collaborateur</a>
+  {% endif %}
+</div>
+
+{% if membres %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Nom</th>
+      <th scope="col">Nom d'utilisateur</th>
+      <th scope="col">Rôle</th>
+      <th scope="col">Statut</th>
+      {% if est_cure %}<th scope="col">Action</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for membre in membres %}
+    <tr>
+      <td>{{ membre.get_full_name|default:"—" }}</td>
+      <td>{{ membre.username }}</td>
+      <td>
+        {% for groupe in membre.groups.all %}<span class="etiquette">{{ groupe.name }}</span>{% endfor %}
+      </td>
+      <td>{% if membre.is_active %}Actif{% else %}Désactivé{% endif %}</td>
+      {% if est_cure %}
+      <td>
+        <form method="post" action="{% url 'comptes:equipe_basculer_actif' membre.pk %}">
+          {% csrf_token %}
+          {% if membre == user %}
+            <span class="sous-titre">—</span>
+          {% else %}
+            <button type="submit" class="bouton-secondaire">
+              {% if membre.is_active %}Désactiver{% else %}Réactiver{% endif %}
+            </button>
+          {% endif %}
+        </form>
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="etat-vide">Aucun membre pour l'instant.</p>
+{% endif %}
+{% endblock %}

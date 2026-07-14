@@ -4,31 +4,43 @@
 
 {% block content %}
 <section class="section-etroite">
-  {% if confirmation %}
-    <p class="suscription">Démonstration</p>
-    <h1>Merci, {{ confirmation.nom_paroisse }}</h1>
-    <p class="avis-demo">
-      Ceci est une démonstration : aucun paiement n'a été traité. Notre
-      équipe vous contactera à {{ confirmation.email_contact }} pour
-      finaliser l'offre « {{ offre_libelle }} ».
-    </p>
-    <a class="bouton-secondaire" href="{% url 'core:accueil' %}">Retour à l'accueil</a>
-  {% else %}
-    <p class="suscription">Souscription</p>
-    <h1>Souscrire à ParoisseConnect</h1>
-    <p class="avis-demo">
-      Mode démonstration : ce formulaire simule le parcours d'abonnement,
-      aucun paiement réel n'est effectué.
-    </p>
-    <form method="post" novalidate>
-      {% csrf_token %}
-      {% for champ in form %}
-        {% include "partials/_form_field.html" with champ=champ %}
-      {% endfor %}
-      <button type="submit" class="bouton-principal bouton-principal--pleine-largeur">
-        Simuler la souscription
-      </button>
-    </form>
+  <p class="suscription">Souscription</p>
+  <h1>Souscrire à ParoisseConnect</h1>
+  <p class="avis-demo">
+    Mode démonstration : l'offre choisie est activée immédiatement, sans
+    paiement réel. Votre paroisse et votre compte administrateur sont créés
+    dès la validation de ce formulaire.
+  </p>
+
+  {% if form.non_field_errors %}
+    <p class="message-erreur" role="alert">{{ form.non_field_errors|join:" " }}</p>
   {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <h2>Votre paroisse</h2>
+    {% include "partials/_form_field.html" with champ=form.nom_paroisse %}
+    {% include "partials/_form_field.html" with champ=form.diocese %}
+    {% include "partials/_form_field.html" with champ=form.adresse %}
+    {% include "partials/_form_field.html" with champ=form.ville %}
+    {% include "partials/_form_field.html" with champ=form.offre %}
+
+    <h2>Votre compte administrateur</h2>
+    <p class="sous-titre">
+      Ce compte sera rattaché au rôle Curé, avec un accès complet à votre
+      paroisse.
+    </p>
+    {% include "partials/_form_field.html" with champ=form.prenom %}
+    {% include "partials/_form_field.html" with champ=form.nom %}
+    {% include "partials/_form_field.html" with champ=form.email %}
+    {% include "partials/_form_field.html" with champ=form.nom_utilisateur %}
+    {% include "partials/_form_field.html" with champ=form.mot_de_passe %}
+    {% include "partials/_form_field.html" with champ=form.mot_de_passe_confirmation %}
+
+    <button type="submit" class="bouton-principal bouton-principal--pleine-largeur">
+      Créer ma paroisse
+    </button>
+  </form>
 </section>
 {% endblock %}

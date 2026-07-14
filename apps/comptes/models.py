@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class Paroisse(models.Model):
@@ -26,6 +27,51 @@ class Paroisse(models.Model):
 
     def __str__(self):
         return self.nom
+
+
+class Abonnement(models.Model):
+    """L'abonnement SaaS d'une paroisse — à ne pas confondre avec les `Don`/
+    `RecuFiscal` de l'app finances, qui sont la comptabilité *interne* de la
+    paroisse. Ceci est la facturation de l'instance ParoisseConnect elle-même.
+    """
+
+    OFFRE_CHOICES = [
+        ("essentiel", "Essentiel"),
+        ("standard", "Standard"),
+        ("diocese", "Diocèse"),
+    ]
+
+    STATUT_CHOICES = [
+        ("actif", "Actif"),
+        ("annule", "Annulé"),
+    ]
+
+    paroisse = models.OneToOneField(
+        Paroisse, verbose_name="paroisse", related_name="abonnement", on_delete=models.CASCADE
+    )
+    offre = models.CharField("offre", max_length=20, choices=OFFRE_CHOICES)
+    statut = models.CharField(
+        "statut", max_length=20, choices=STATUT_CHOICES, default="actif"
+    )
+    date_debut = models.DateField("date de début", auto_now_add=True)
+    date_annulation = models.DateField("date d'annulation", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "abonnement"
+        verbose_name_plural = "abonnements"
+
+    def __str__(self):
+        return f"{self.paroisse.nom} — {self.get_offre_display()} ({self.get_statut_display()})"
+
+    def annuler(self):
+        self.statut = "annule"
+        self.date_annulation = timezone.now().date()
+        self.save(update_fields=["statut", "date_annulation"])
+
+    def reactiver(self):
+        self.statut = "actif"
+        self.date_annulation = None
+        self.save(update_fields=["statut", "date_annulation"])
 
 
 class Utilisateur(AbstractUser):

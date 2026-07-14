@@ -1,4 +1,6 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import redirect
 
 
 class FiltrageParoisseMixin(LoginRequiredMixin):
@@ -38,3 +40,16 @@ class RoleRequisMixin(LoginRequiredMixin, UserPassesTestMixin):
         if "Curé" in groupes:
             return True
         return bool(groupes & set(self.roles_autorises))
+
+
+class ExigeParoisseMixin:
+    """Empêche un superadmin (paroisse=None) d'atteindre une vue qui
+    suppose une paroisse courante (abonnement, équipe...). À combiner avec
+    RoleRequisMixin ou FiltrageParoisseMixin, qui garantissent déjà
+    l'authentification."""
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.paroisse is None:
+            messages.error(request, "Cette page suppose un compte rattaché à une paroisse.")
+            return redirect("core:tableau_de_bord")
+        return super().dispatch(request, *args, **kwargs)

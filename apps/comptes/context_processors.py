@@ -20,4 +20,5 @@ def navigation_par_role(request):
         "nav_celebrations": est_cure or est_lecteur or "Secrétaire" in groupes,
         "nav_finances": est_cure or est_lecteur or "Trésorier" in groupes,
         "nav_communication": est_cure or est_lecteur or "Secrétaire" in groupes,
+        "est_cure": est_cure,
     }

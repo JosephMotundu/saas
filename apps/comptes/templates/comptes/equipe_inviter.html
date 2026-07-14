@@ -1,0 +1,23 @@
+{% extends "base_app.html" %}
+
+{% block title %}Inviter un collaborateur — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Inviter un collaborateur</h1>
+<p class="sous-titre">
+  Un mot de passe temporaire sera généré automatiquement et affiché une
+  seule fois : communiquez-le à la personne invitée, elle pourra le changer
+  depuis « Mon compte ».
+</p>
+
+<form method="post" novalidate class="fiche">
+  {% csrf_token %}
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'comptes:equipe' %}">Annuler</a>
+    <button type="submit" class="bouton-principal">Créer le compte</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base_app.html" %}
+
+{% block title %}Changer mon mot de passe — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Changer mon mot de passe</h1>
+
+<form method="post" novalidate class="fiche">
+  {% csrf_token %}
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'comptes:profil' %}">Annuler</a>
+    <button type="submit" class="bouton-principal">Changer le mot de passe</button>
+  </div>
+</form>
+{% endblock %}

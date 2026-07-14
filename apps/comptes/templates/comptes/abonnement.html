@@ -1,0 +1,52 @@
+{% extends "base_app.html" %}
+
+{% block title %}Abonnement — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Abonnement</h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Offre actuelle</dt>
+    <dd>{{ abonnement.get_offre_display }}</dd>
+    <dt>Statut</dt>
+    <dd><span class="etiquette">{{ abonnement.get_statut_display }}</span></dd>
+    <dt>Depuis le</dt>
+    <dd class="numerique">{{ abonnement.date_debut }}</dd>
+    {% if abonnement.date_annulation %}
+    <dt>Annulé le</dt>
+    <dd class="numerique">{{ abonnement.date_annulation }}</dd>
+    {% endif %}
+  </dl>
+</div>
+
+{% if abonnement.statut == "actif" %}
+<h2>Changer d'offre</h2>
+<form method="post" action="{% url 'comptes:abonnement' %}" novalidate class="fiche">
+  {% csrf_token %}
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <button type="submit" class="bouton-principal">Mettre à jour l'offre</button>
+</form>
+
+<div class="fiche">
+  <h2>Annuler l'abonnement</h2>
+  <p>Vous conserverez l'accès à ParoisseConnect ; contactez-nous pour toute
+    question avant de confirmer.</p>
+  <form method="post" action="{% url 'comptes:abonnement_basculer_statut' %}">
+    {% csrf_token %}
+    <button type="submit" class="bouton-danger">Annuler l'abonnement</button>
+  </form>
+</div>
+{% else %}
+<div class="fiche">
+  <h2>Abonnement annulé</h2>
+  <p>Vous pouvez le réactiver à tout moment.</p>
+  <form method="post" action="{% url 'comptes:abonnement_basculer_statut' %}">
+    {% csrf_token %}
+    <button type="submit" class="bouton-principal">Réactiver l'abonnement</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

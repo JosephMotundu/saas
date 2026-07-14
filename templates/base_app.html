@@ -64,7 +64,11 @@
         {{ request.user.paroisse.nom|default:"ParoisseConnect" }}
       </span>
       <div class="barre-superieure__compte">
-        <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+        <a href="{% url 'comptes:profil' %}">{{ request.user.get_full_name|default:request.user.username }}</a>
+        {% if est_cure %}
+          <a href="{% url 'comptes:equipe' %}">Équipe</a>
+          <a href="{% url 'comptes:abonnement' %}">Abonnement</a>
+        {% endif %}
         <form class="forme-deconnexion" method="post" action="{% url 'comptes:deconnexion' %}">
           {% csrf_token %}
           <button type="submit" class="lien-deconnexion">Se déconnecter</button>

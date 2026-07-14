@@ -865,7 +865,9 @@ a:hover {
 .actions-impression {
   max-width: 40rem;
   margin: 1rem auto;
-  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 @media print {

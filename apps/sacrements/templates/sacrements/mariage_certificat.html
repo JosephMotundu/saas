@@ -1,0 +1,38 @@
+{% extends "base_app.html" %}
+
+{% block title %}Certificat — {{ mariage.numero_acte }}{% endblock %}
+
+{% block content %}
+<div class="actions-impression">
+  <a class="bouton-secondaire" href="{% url 'sacrements:mariage_detail' mariage.pk %}">Retour à l'acte</a>
+  <button class="bouton-secondaire" onclick="window.print()" type="button">Imprimer / enregistrer en PDF</button>
+</div>
+
+<article class="certificat">
+  <header class="certificat__entete">
+    <p class="suscription">{{ mariage.paroisse.nom }}</p>
+    <h1>Certificat de mariage</h1>
+    <p class="certificat__numero numerique">Acte n&deg; {{ mariage.numero_acte }}</p>
+  </header>
+
+  <dl>
+    <dt>Premier conjoint</dt>
+    <dd>{{ mariage.conjoint1.nom_complet }}</dd>
+    <dt>Second conjoint</dt>
+    <dd>{{ mariage.conjoint2.nom_complet }}</dd>
+    <dt>Date</dt>
+    <dd class="numerique">{{ mariage.date }}</dd>
+    <dt>Lieu</dt>
+    <dd>{{ mariage.lieu|default:"—" }}</dd>
+    <dt>Célébrant</dt>
+    <dd>{{ mariage.celebrant }}</dd>
+    <dt>Témoins</dt>
+    <dd>{{ mariage.temoins|default:"—" }}</dd>
+  </dl>
+
+  <p class="certificat__pied">
+    Document généré par ParoisseConnect — registre paroissial de
+    {{ mariage.paroisse.nom }}. Enregistré le {{ mariage.date_enregistrement|date:"d/m/Y" }}.
+  </p>
+</article>
+{% endblock %}

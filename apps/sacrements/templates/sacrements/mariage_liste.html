@@ -1,0 +1,48 @@
+{% extends "base_app.html" %}
+
+{% block title %}Mariages — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Mariages</h1>
+  <a class="bouton-principal" href="{% url 'sacrements:mariage_creer' %}">Enregistrer un mariage</a>
+</div>
+
+{% if mariages %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">N° d'acte</th>
+      <th scope="col">Conjoints</th>
+      <th scope="col">Date</th>
+      <th scope="col">Célébrant</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for mariage in mariages %}
+    <tr>
+      <td class="numerique"><a href="{% url 'sacrements:mariage_detail' mariage.pk %}">{{ mariage.numero_acte }}</a></td>
+      <td>{{ mariage.conjoint1.nom_complet }} &amp; {{ mariage.conjoint2.nom_complet }}</td>
+      <td class="numerique">{{ mariage.date }}</td>
+      <td>{{ mariage.celebrant }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucun mariage enregistré pour l'instant.</p>
+{% endif %}
+{% endblock %}

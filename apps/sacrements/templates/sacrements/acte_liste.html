@@ -1,0 +1,52 @@
+{% extends "base_app.html" %}
+
+{% block title %}{{ nom_pluriel }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>{{ nom_pluriel }}</h1>
+  <a class="bouton-principal" href="{% url 'sacrements:'|add:type_url|add:'_creer' %}">
+    Enregistrer {{ nom_singulier|lower }}
+  </a>
+</div>
+
+{% if actes %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">N° d'acte</th>
+      <th scope="col">Paroissien</th>
+      <th scope="col">Date</th>
+      <th scope="col">Célébrant</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for acte in actes %}
+    <tr>
+      <td class="numerique">
+        <a href="{% url 'sacrements:'|add:type_url|add:'_detail' acte.pk %}">{{ acte.numero_acte }}</a>
+      </td>
+      <td>{{ acte.paroissien.nom_complet }}</td>
+      <td class="numerique">{{ acte.date }}</td>
+      <td>{{ acte.celebrant }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucun acte enregistré pour l'instant. Enregistrez le premier.</p>
+{% endif %}
+{% endblock %}

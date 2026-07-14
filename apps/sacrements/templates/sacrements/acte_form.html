@@ -1,0 +1,18 @@
+{% extends "base_app.html" %}
+
+{% block title %}{% if object %}Modifier{% else %}Enregistrer{% endif %} {{ nom_singulier|lower }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Modifier {{ nom_singulier|lower }} {{ object.numero_acte }}{% else %}Enregistrer {{ nom_singulier|lower }}{% endif %}</h1>
+
+<form method="post" novalidate class="fiche">
+  {% csrf_token %}
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'sacrements:'|add:type_url|add:'_liste' %}">Annuler</a>
+    <button type="submit" class="bouton-principal">Enregistrer</button>
+  </div>
+</form>
+{% endblock %}

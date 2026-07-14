@@ -1,0 +1,65 @@
+{% extends "base_app.html" %}
+
+{% block title %}{{ nom_singulier }} {{ acte.numero_acte }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>{{ nom_singulier }} — <span class="numerique">{{ acte.numero_acte }}</span></h1>
+</div>
+
+<div class="fiche">
+  <dl>
+    <dt>Paroissien</dt>
+    <dd><a href="{% url 'paroissiens:paroissien_detail' acte.paroissien.pk %}">{{ acte.paroissien.nom_complet }}</a></dd>
+    <dt>Date</dt>
+    <dd class="numerique">{{ acte.date }}</dd>
+    <dt>Lieu</dt>
+    <dd>{{ acte.lieu|default:"—" }}</dd>
+    <dt>Célébrant</dt>
+    <dd>{{ acte.celebrant }}</dd>
+    {% if acte.parrain is not None %}
+    <dt>Parrain</dt>
+    <dd>{{ acte.parrain|default:"—" }}</dd>
+    <dt>Marraine</dt>
+    <dd>{{ acte.marraine|default:"—" }}</dd>
+    {% endif %}
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'sacrements:'|add:type_url|add:'_liste' %}">Retour au registre</a>
+  <a class="bouton-principal" href="{% url 'sacrements:'|add:type_url|add:'_modifier' acte.pk %}">Modifier</a>
+  <a class="bouton-secondaire" href="{% url 'sacrements:'|add:type_url|add:'_certificat' acte.pk %}">Certificat imprimable</a>
+</div>
+
+{% if type_url == "bapteme" %}
+<h2>Mentions marginales</h2>
+{% if acte.mentions_marginales.all %}
+<table class="table-registre">
+  <thead><tr><th scope="col">Type</th><th scope="col">Date</th><th scope="col">Référence</th></tr></thead>
+  <tbody>
+    {% for mention in acte.mentions_marginales.all %}
+    <tr>
+      <td>{{ mention.get_type_mention_display }}</td>
+      <td class="numerique">{{ mention.date }}</td>
+      <td>{{ mention.reference|default:"—" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="etat-vide">Aucune mention marginale pour l'instant.</p>
+{% endif %}
+
+<div class="fiche">
+  <h3>Ajouter une mention marginale</h3>
+  <form method="post" action="{% url 'sacrements:mention_marginale_creer' acte.pk %}" novalidate>
+    {% csrf_token %}
+    {% for champ in formulaire_mention %}
+      {% include "partials/_form_field.html" with champ=champ %}
+    {% endfor %}
+    <button type="submit" class="bouton-principal">Ajouter la mention</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

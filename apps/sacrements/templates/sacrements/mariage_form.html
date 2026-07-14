@@ -1,0 +1,18 @@
+{% extends "base_app.html" %}
+
+{% block title %}{% if object %}Modifier{% else %}Enregistrer{% endif %} un mariage — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Modifier le mariage {{ object.numero_acte }}{% else %}Enregistrer un mariage{% endif %}</h1>
+
+<form method="post" novalidate class="fiche">
+  {% csrf_token %}
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'sacrements:mariage_liste' %}">Annuler</a>
+    <button type="submit" class="bouton-principal">Enregistrer</button>
+  </div>
+</form>
+{% endblock %}

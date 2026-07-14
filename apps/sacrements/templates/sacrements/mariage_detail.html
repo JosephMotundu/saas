@@ -1,0 +1,30 @@
+{% extends "base_app.html" %}
+
+{% block title %}Mariage {{ mariage.numero_acte }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Mariage — <span class="numerique">{{ mariage.numero_acte }}</span></h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Premier conjoint</dt>
+    <dd><a href="{% url 'paroissiens:paroissien_detail' mariage.conjoint1.pk %}">{{ mariage.conjoint1.nom_complet }}</a></dd>
+    <dt>Second conjoint</dt>
+    <dd><a href="{% url 'paroissiens:paroissien_detail' mariage.conjoint2.pk %}">{{ mariage.conjoint2.nom_complet }}</a></dd>
+    <dt>Date</dt>
+    <dd class="numerique">{{ mariage.date }}</dd>
+    <dt>Lieu</dt>
+    <dd>{{ mariage.lieu|default:"—" }}</dd>
+    <dt>Célébrant</dt>
+    <dd>{{ mariage.celebrant }}</dd>
+    <dt>Témoins</dt>
+    <dd>{{ mariage.temoins|default:"—" }}</dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'sacrements:mariage_liste' %}">Retour au registre</a>
+  <a class="bouton-principal" href="{% url 'sacrements:mariage_modifier' mariage.pk %}">Modifier</a>
+  <a class="bouton-secondaire" href="{% url 'sacrements:mariage_certificat' mariage.pk %}">Certificat imprimable</a>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base_app.html" %}
+
+{% block title %}Certificat — {{ acte.numero_acte }}{% endblock %}
+
+{% block content %}
+<div class="actions-impression">
+  <a class="bouton-secondaire" href="{% url 'sacrements:'|add:type_url|add:'_detail' acte.pk %}">Retour à l'acte</a>
+  <button class="bouton-secondaire" onclick="window.print()" type="button">Imprimer / enregistrer en PDF</button>
+</div>
+
+<article class="certificat">
+  <header class="certificat__entete">
+    <p class="suscription">{{ acte.paroisse.nom }}</p>
+    <h1>Certificat</h1>
+    <p class="certificat__numero numerique">Acte n&deg; {{ acte.numero_acte }}</p>
+  </header>
+
+  <dl>
+    <dt>Paroissien</dt>
+    <dd>{{ acte.paroissien.nom_complet }}</dd>
+    <dt>Date</dt>
+    <dd class="numerique">{{ acte.date }}</dd>
+    <dt>Lieu</dt>
+    <dd>{{ acte.lieu|default:"—" }}</dd>
+    <dt>Célébrant</dt>
+    <dd>{{ acte.celebrant }}</dd>
+    {% if acte.parrain is not None %}
+    <dt>Parrain</dt>
+    <dd>{{ acte.parrain|default:"—" }}</dd>
+    <dt>Marraine</dt>
+    <dd>{{ acte.marraine|default:"—" }}</dd>
+    {% endif %}
+  </dl>
+
+  <p class="certificat__pied">
+    Document généré par ParoisseConnect — registre paroissial de
+    {{ acte.paroisse.nom }}. Enregistré le {{ acte.date_enregistrement|date:"d/m/Y" }}.
+  </p>
+</article>
+{% endblock %}

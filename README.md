@@ -15,8 +15,7 @@ cp .env.example .env   # ajuster les valeurs si besoin
 make build
 make up
 make migrate
-make seed               # paroisse Saint Raphaël + jeu de données de démo
-make createsuperuser
+make seed               # paroisse Saint Raphaël + un compte par rôle + données de démo
 ```
 
 L'application est disponible sur http://localhost:8000.
@@ -32,7 +31,30 @@ pip install -r requirements/dev.txt
 cp .env.example .env
 # éditer .env : DATABASE_URL=sqlite:///db.sqlite3
 python manage.py migrate
+python manage.py seed
 python manage.py runserver
+```
+
+## Comptes de démonstration
+
+`python manage.py seed` (ou `make seed`) crée — ou recrée à l'identique,
+la commande est idempotente — la paroisse Saint Raphaël et ces comptes :
+
+| Utilisateur | Mot de passe | Rôle |
+|---|---|---|
+| `admin` | `admin1234` | Superadministrateur (accès à toutes les paroisses) |
+| `cure` | `cure1234` | Curé |
+| `secretaire` | `secretaire1234` | Secrétaire |
+| `tresorier` | `tresorier1234` | Trésorier |
+| `lecteur` | `lecteur1234` | Lecteur |
+
+**En cas d'erreur du type « no such table » / « aucune table de ce type »** :
+la base SQLite locale (`db.sqlite3`, volontairement absente du dépôt) n'a
+pas été migrée. Il suffit de relancer :
+
+```bash
+python manage.py migrate
+python manage.py seed
 ```
 
 ## Tests
@@ -115,9 +137,14 @@ Le projet est construit par étapes (voir brief).
     réactiver l'abonnement de la paroisse. Modèle `Abonnement`
     (`apps/comptes/models.py`), bien distinct des `Don`/`RecuFiscal` de
     l'app finances qui sont la comptabilité *interne* de la paroisse.
+- ✅ Commande `manage.py seed` (`apps/comptes/management/commands/seed.py`) —
+  idempotente : paroisse Saint Raphaël, abonnement, un compte par rôle,
+  jeu de données de démonstration (famille, paroissien, baptême,
+  célébration + intention, don + reçu, annonce). Le reste de l'étape 11
+  (commande `backup`, admin complet — déjà largement fait au fil des
+  apps) reste à finir.
 - ⏳ Étape 9 — API DRF + JWT + géocodage Nominatim
 - ⏳ Étape 10 — 2FA TOTP
-- ⏳ Étape 11 — Admin complet pour toutes les entités, commandes `seed`/`backup`
 
 ## Rôles et accès aux modules
 

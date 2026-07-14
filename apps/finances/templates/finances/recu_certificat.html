@@ -1,0 +1,37 @@
+{% extends "base_app.html" %}
+
+{% block title %}Reçu {{ recu.numero }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="actions-impression">
+  <a class="bouton-secondaire" href="{% url 'finances:don_detail' don.pk %}">Retour au don</a>
+  <button class="bouton-secondaire" onclick="window.print()" type="button">Imprimer / enregistrer en PDF</button>
+</div>
+
+<article class="certificat">
+  <header class="certificat__entete">
+    <p class="suscription">{{ don.paroisse.nom }}</p>
+    <h1>Reçu fiscal</h1>
+    <p class="certificat__numero numerique">Reçu n&deg; {{ recu.numero }}</p>
+  </header>
+
+  <dl>
+    <dt>Donateur</dt>
+    <dd>{{ don.paroissien.nom_complet|default:"Don anonyme" }}</dd>
+    <dt>Montant</dt>
+    <dd class="numerique">{{ don.montant }}</dd>
+    <dt>Type de don</dt>
+    <dd>{{ don.get_type_don_display }}</dd>
+    <dt>Mode de paiement</dt>
+    <dd>{{ don.get_mode_paiement_display }}</dd>
+    <dt>Date du don</dt>
+    <dd class="numerique">{{ don.date }}</dd>
+    <dt>Date d'émission du reçu</dt>
+    <dd class="numerique">{{ recu.date_emission }}</dd>
+  </dl>
+
+  <p class="certificat__pied">
+    Document généré par ParoisseConnect — {{ don.paroisse.nom }}.
+  </p>
+</article>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base_app.html" %}
+
+{% block title %}Don — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Don</h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Donateur</dt>
+    <dd>
+      {% if don.paroissien %}
+        <a href="{% url 'paroissiens:paroissien_detail' don.paroissien.pk %}">{{ don.paroissien.nom_complet }}</a>
+      {% else %}Don anonyme{% endif %}
+    </dd>
+    <dt>Montant</dt>
+    <dd class="numerique">{{ don.montant }}</dd>
+    <dt>Type</dt>
+    <dd><span class="etiquette">{{ don.get_type_don_display }}</span></dd>
+    <dt>Mode de paiement</dt>
+    <dd>{{ don.get_mode_paiement_display }}</dd>
+    <dt>Date</dt>
+    <dd class="numerique">{{ don.date }}</dd>
+    <dt>Reçu fiscal</dt>
+    <dd class="numerique">{{ don.recu_fiscal.numero }}</dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'finances:don_liste' %}">Retour à la liste</a>
+  <a class="bouton-principal" href="{% url 'finances:recu_fiscal' don.pk %}">Reçu fiscal imprimable</a>
+</div>
+{% endblock %}

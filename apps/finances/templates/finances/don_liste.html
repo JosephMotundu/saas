@@ -1,0 +1,54 @@
+{% extends "base_app.html" %}
+
+{% block title %}Dons — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Dons</h1>
+  <a class="bouton-principal" href="{% url 'finances:don_creer' %}">Enregistrer un don</a>
+</div>
+
+{% if dons %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Donateur</th>
+      <th scope="col">Montant</th>
+      <th scope="col">Type</th>
+      <th scope="col">Mode de paiement</th>
+      <th scope="col">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for don in dons %}
+    <tr>
+      <td>
+        <a href="{% url 'finances:don_detail' don.pk %}">
+          {{ don.paroissien.nom_complet|default:"Don anonyme" }}
+        </a>
+      </td>
+      <td class="numerique">{{ don.montant }}</td>
+      <td><span class="etiquette">{{ don.get_type_don_display }}</span></td>
+      <td>{{ don.get_mode_paiement_display }}</td>
+      <td class="numerique">{{ don.date }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucun don enregistré pour l'instant. Enregistrez le premier.</p>
+{% endif %}
+{% endblock %}

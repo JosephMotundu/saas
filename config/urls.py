@@ -13,6 +13,7 @@ urlpatterns = [
     path("comptes/", include("apps.comptes.urls")),
     path("paroissiens/", include("apps.paroissiens.urls")),
     path("sacrements/", include("apps.sacrements.urls")),
+    path("celebrations/", include("apps.celebrations.urls")),
     path("", include("apps.core.urls")),
 ]
 

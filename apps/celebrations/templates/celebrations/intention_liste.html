@@ -1,0 +1,53 @@
+{% extends "base_app.html" %}
+
+{% block title %}Intentions de messe — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Intentions de messe</h1>
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'celebrations:celebration_liste' %}">Célébrations</a>
+    <a class="bouton-principal" href="{% url 'celebrations:intention_creer' %}">Ajouter une intention</a>
+  </div>
+</div>
+
+{% if intentions %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Demandeur</th>
+      <th scope="col">Intention</th>
+      <th scope="col">Célébration</th>
+      <th scope="col">Offrande</th>
+      <th scope="col">Statut</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for intention in intentions %}
+    <tr>
+      <td><a href="{% url 'celebrations:intention_detail' intention.pk %}">{{ intention.demandeur }}</a></td>
+      <td>{{ intention.intention }}</td>
+      <td class="numerique">{{ intention.celebration.date }}</td>
+      <td class="numerique">{{ intention.montant_offrande|default:"—" }}</td>
+      <td><span class="etiquette">{{ intention.get_statut_display }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucune intention de messe pour l'instant. Ajoutez la première.</p>
+{% endif %}
+{% endblock %}

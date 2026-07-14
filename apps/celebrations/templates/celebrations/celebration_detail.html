@@ -1,0 +1,45 @@
+{% extends "base_app.html" %}
+
+{% block title %}{{ celebration }} — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>{{ celebration.get_type_celebration_display }}</h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Date</dt>
+    <dd class="numerique">{{ celebration.date }}</dd>
+    <dt>Heure</dt>
+    <dd class="numerique">{{ celebration.heure }}</dd>
+    <dt>Célébrant</dt>
+    <dd>{{ celebration.celebrant }}</dd>
+    <dt>Lieu</dt>
+    <dd>{{ celebration.lieu|default:"—" }}</dd>
+  </dl>
+</div>
+
+<h2>Intentions de messe</h2>
+{% if celebration.intentions.all %}
+<table class="table-registre">
+  <thead><tr><th scope="col">Demandeur</th><th scope="col">Intention</th><th scope="col">Offrande</th><th scope="col">Statut</th></tr></thead>
+  <tbody>
+    {% for intention in celebration.intentions.all %}
+    <tr>
+      <td><a href="{% url 'celebrations:intention_detail' intention.pk %}">{{ intention.demandeur }}</a></td>
+      <td>{{ intention.intention }}</td>
+      <td class="numerique">{{ intention.montant_offrande|default:"—" }}</td>
+      <td><span class="etiquette">{{ intention.get_statut_display }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="etat-vide">Aucune intention de messe pour cette célébration.</p>
+{% endif %}
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'celebrations:celebration_liste' %}">Retour à la liste</a>
+  <a class="bouton-principal" href="{% url 'celebrations:celebration_modifier' celebration.pk %}">Modifier</a>
+  <a class="bouton-secondaire" href="{% url 'celebrations:intention_creer' %}">Ajouter une intention</a>
+</div>
+{% endblock %}

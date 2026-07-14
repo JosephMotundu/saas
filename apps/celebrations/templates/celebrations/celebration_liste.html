@@ -1,0 +1,53 @@
+{% extends "base_app.html" %}
+
+{% block title %}Célébrations — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Célébrations</h1>
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'celebrations:intention_liste' %}">Intentions de messe</a>
+    <a class="bouton-principal" href="{% url 'celebrations:celebration_creer' %}">Ajouter une célébration</a>
+  </div>
+</div>
+
+{% if celebrations %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col">Heure</th>
+      <th scope="col">Type</th>
+      <th scope="col">Célébrant</th>
+      <th scope="col">Lieu</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for celebration in celebrations %}
+    <tr>
+      <td class="numerique"><a href="{% url 'celebrations:celebration_detail' celebration.pk %}">{{ celebration.date }}</a></td>
+      <td class="numerique">{{ celebration.heure }}</td>
+      <td><span class="etiquette">{{ celebration.get_type_celebration_display }}</span></td>
+      <td>{{ celebration.celebrant }}</td>
+      <td>{{ celebration.lieu|default:"—" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucune célébration planifiée pour l'instant. Ajoutez la première.</p>
+{% endif %}
+{% endblock %}

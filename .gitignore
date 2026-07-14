@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.Python
+build/
+dist/
+
+# Virtualenv
+.venv/
+venv/
+env/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+/static_collected/
+
+# Env vars / secrets
+.env
+.env.*
+!.env.example
+
+# 2FA / secrets
+*.pem
+*.key
+
+# Backups
+/backups/*.sql
+/backups/*.dump
+!/backups/.gitkeep
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Docker
+*.pid

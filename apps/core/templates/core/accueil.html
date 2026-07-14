@@ -1,0 +1,62 @@
+{% extends "base_public.html" %}
+
+{% block title %}ParoisseConnect — le registre paroissial numérique{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <p class="suscription">Temps ordinaire</p>
+    <h1>Le registre de votre paroisse, tenu avec la même rigueur qu'un missel relié</h1>
+    <p class="hero__accroche">
+      ParoisseConnect rassemble paroissiens, sacrements, célébrations et dons
+      dans un seul registre numérique, pensé pour un secrétariat paroissial —
+      pas pour un tableau de bord marketing.
+    </p>
+    <div class="hero__actions">
+      <a class="bouton-principal" href="{% url 'core:tarifs' %}">Voir les tarifs</a>
+      <a class="bouton-secondaire" href="{% url 'core:fonctionnalites' %}">Découvrir les fonctionnalités</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--releve">
+  <div class="container">
+    <div class="section__entete">
+      <h2>Un registre pour chaque aspect de la vie paroissiale</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="carte">
+          <h3>Paroissiens &amp; familles</h3>
+          <p>Un annuaire unique, organisé par famille, à jour et consultable
+            par le secrétariat.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="carte">
+          <h3>Registres sacramentels</h3>
+          <p>Baptêmes, communions, confirmations, mariages, funérailles — et
+            leurs mentions marginales, comme dans un registre relié.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="carte">
+          <h3>Célébrations &amp; dons</h3>
+          <p>Intentions de messe, offrandes et dons suivis avec des reçus
+            fiscaux numérotés.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container text-center">
+    <h2>Prêt pour votre paroisse ?</h2>
+    <p class="hero__accroche" style="margin-left:auto;margin-right:auto;">
+      Découvrez nos offres et souscrivez une démonstration en quelques minutes.
+    </p>
+    <a class="bouton-principal" href="{% url 'core:souscription' %}">Souscrire une démonstration</a>
+  </div>
+</section>
+{% endblock %}

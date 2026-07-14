@@ -1,0 +1,71 @@
+{% extends "base_app.html" %}
+
+{% block title %}Tableau de bord — ParoisseConnect{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+{% endblock %}
+
+{% block content %}
+<h1>Tableau de bord</h1>
+<p class="sous-titre">
+  {% if paroisse %}{{ paroisse.nom }} — {{ paroisse.ville }}{% else %}Aucune paroisse rattachée à ce compte.{% endif %}
+</p>
+
+<div class="compteurs">
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ nombre_utilisateurs }}</span>
+    <span class="compteur__libelle">Utilisateurs de la paroisse</span>
+  </div>
+  {% if nav_paroissiens %}
+  <div class="compteur compteur--a-venir">
+    <span class="compteur__valeur numerique">—</span>
+    <span class="compteur__libelle">Paroissiens (module à venir)</span>
+  </div>
+  {% endif %}
+  {% if nav_sacrements %}
+  <div class="compteur compteur--a-venir">
+    <span class="compteur__valeur numerique">—</span>
+    <span class="compteur__libelle">Actes sacramentels (module à venir)</span>
+  </div>
+  {% endif %}
+  {% if nav_finances %}
+  <div class="compteur compteur--a-venir">
+    <span class="compteur__valeur numerique">—</span>
+    <span class="compteur__libelle">Dons enregistrés (module à venir)</span>
+  </div>
+  {% endif %}
+</div>
+
+<h2>Localisation de la paroisse</h2>
+{% if paroisse and paroisse.latitude and paroisse.longitude %}
+  <div id="carte-paroisse"
+       class="carte-paroisse"
+       data-lat="{{ paroisse.latitude }}"
+       data-lng="{{ paroisse.longitude }}"
+       data-nom="{{ paroisse.nom }}"></div>
+{% else %}
+  <p class="avis-localisation">
+    Localisation non renseignée. Elle sera géocodée automatiquement depuis
+    l'adresse de la paroisse (voir module API).
+  </p>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  const carte = document.getElementById("carte-paroisse");
+  if (carte) {
+    const lat = parseFloat(carte.dataset.lat);
+    const lng = parseFloat(carte.dataset.lng);
+    const nom = carte.dataset.nom;
+    const map = L.map(carte).setView([lat, lng], 15);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; contributeurs OpenStreetMap",
+      maxZoom: 19,
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup(nom);
+  }
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_public.html" %}
 
 {% block title %}Connexion — ParoisseConnect{% endblock %}
 
@@ -12,9 +12,6 @@
     {% if form.errors %}
       <p class="message-erreur" role="alert">{{ form.non_field_errors|join:" " }}</p>
     {% endif %}
-    {% for message in messages %}
-      <p class="message-info">{{ message }}</p>
-    {% endfor %}
 
     <form class="formulaire-auth" method="post" novalidate>
       {% csrf_token %}

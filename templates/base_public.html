@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block body %}
+<a class="lien-evitement" href="#contenu-principal">Aller au contenu principal</a>
+
+<header class="entete-publique">
+  <nav class="navbar navbar-expand-md">
+    <div class="container">
+      <a class="navbar-brand entete__marque" href="{% url 'core:accueil' %}">ParoisseConnect</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPublique" aria-controls="navPublique" aria-expanded="false" aria-label="Basculer la navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navPublique">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'core:accueil' %}">Accueil</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'core:fonctionnalites' %}">Fonctionnalités</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'core:tarifs' %}">Tarifs</a></li>
+          <li class="nav-item"><a class="nav-link nav-link--connexion" href="{% url 'comptes:connexion' %}">Connexion</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main id="contenu-principal">
+  <div class="container">
+    {% include "partials/_messages.html" %}
+  </div>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="pied-de-page">
+  <div class="container">
+    <p>&copy; {% now "Y" %} ParoisseConnect &mdash; Paroisse Saint Raphaël.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+{% endblock %}

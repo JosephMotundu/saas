@@ -60,4 +60,8 @@ Le projet est construit par étapes (voir brief).
 - ✅ Étape 1 — scaffolding (settings dev/prod, Docker, PostgreSQL, Git)
 - ✅ Étape 2 — app `comptes` : modèles `Paroisse`/`Utilisateur`, groupes de
   rôles (Curé, Secrétaire, Trésorier, Lecteur), connexion/déconnexion, admin
+- ✅ Fondations des templates — `theme.css` (design tokens + surcharge
+  Bootstrap), `base.html`/`base_public.html`/`base_app.html`, app `core`
+  (vitrine publique : accueil, fonctionnalités, tarifs, souscription
+  simulée ; tableau de bord avec carte Leaflet et compteurs)
 - ⏳ Étape 3 — middleware et managers multi-tenant

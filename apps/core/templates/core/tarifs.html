@@ -1,0 +1,56 @@
+{% extends "base_public.html" %}
+
+{% block title %}Tarifs — ParoisseConnect{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section__entete">
+      <p class="suscription">Tarifs</p>
+      <h1>Une offre par taille de paroisse</h1>
+      <p>Démonstration disponible sans engagement.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-12 col-md-4">
+        <div class="carte carte-tarif">
+          <h3>Essentiel</h3>
+          <p class="carte-tarif__prix">25 €<span class="carte-tarif__periode">/mois</span></p>
+          <ul>
+            <li>Paroissiens &amp; familles</li>
+            <li>Registres sacramentels</li>
+            <li>1 utilisateur secrétariat</li>
+          </ul>
+          <a class="bouton-secondaire" href="{% url 'core:souscription' %}?offre=essentiel">Choisir Essentiel</a>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="carte carte-tarif carte-tarif--mise-en-avant">
+          <h3>Standard</h3>
+          <p class="carte-tarif__prix">49 €<span class="carte-tarif__periode">/mois</span></p>
+          <ul>
+            <li>Tout Essentiel</li>
+            <li>Célébrations &amp; intentions de messe</li>
+            <li>Dons &amp; reçus fiscaux</li>
+            <li>Jusqu'à 5 utilisateurs</li>
+          </ul>
+          <a class="bouton-principal" href="{% url 'core:souscription' %}?offre=standard">Choisir Standard</a>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="carte carte-tarif">
+          <h3>Diocèse</h3>
+          <p class="carte-tarif__prix">Sur devis</p>
+          <ul>
+            <li>Tout Standard</li>
+            <li>Plusieurs paroisses</li>
+            <li>Utilisateurs illimités</li>
+            <li>Accompagnement dédié</li>
+          </ul>
+          <a class="bouton-secondaire" href="{% url 'core:souscription' %}?offre=diocese">Choisir Diocèse</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base_public.html" %}
+
+{% block title %}Souscription — ParoisseConnect{% endblock %}
+
+{% block content %}
+<section class="section-etroite">
+  {% if confirmation %}
+    <p class="suscription">Démonstration</p>
+    <h1>Merci, {{ confirmation.nom_paroisse }}</h1>
+    <p class="avis-demo">
+      Ceci est une démonstration : aucun paiement n'a été traité. Notre
+      équipe vous contactera à {{ confirmation.email_contact }} pour
+      finaliser l'offre « {{ offre_libelle }} ».
+    </p>
+    <a class="bouton-secondaire" href="{% url 'core:accueil' %}">Retour à l'accueil</a>
+  {% else %}
+    <p class="suscription">Souscription</p>
+    <h1>Souscrire à ParoisseConnect</h1>
+    <p class="avis-demo">
+      Mode démonstration : ce formulaire simule le parcours d'abonnement,
+      aucun paiement réel n'est effectué.
+    </p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for champ in form %}
+        {% include "partials/_form_field.html" with champ=champ %}
+      {% endfor %}
+      <button type="submit" class="bouton-principal bouton-principal--pleine-largeur">
+        Simuler la souscription
+      </button>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

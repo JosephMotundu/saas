@@ -44,6 +44,7 @@ THIRD_PARTY_APPS = [
 # Les apps métier sont ajoutées ici au fil des étapes (comptes, paroissiens, ...).
 LOCAL_APPS = [
     "apps.comptes",
+    "apps.core",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -72,6 +73,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.comptes.context_processors.navigation_par_role",
             ],
         },
     },
@@ -112,7 +114,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "comptes:connexion"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "core:tableau_de_bord"
 # Pas de LOGOUT_REDIRECT_URL : LogoutView affiche la page de confirmation
 # comptes/deconnexion.html plutôt que de rediriger directement.
 

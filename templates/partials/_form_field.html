@@ -1,0 +1,14 @@
+{% comment %}
+Rendu standardisé d'un champ de formulaire.
+Usage : {% include "partials/_form_field.html" with champ=form.mon_champ %}
+{% endcomment %}
+<div class="champ{% if champ.errors %} champ--erreur{% endif %}">
+  <label for="{{ champ.id_for_label }}">
+    {{ champ.label }}{% if champ.field.required %} *{% endif %}
+  </label>
+  {{ champ }}
+  {% if champ.help_text %}<p class="champ__aide">{{ champ.help_text }}</p>{% endif %}
+  {% for erreur in champ.errors %}
+    <p class="champ__erreur-texte">{{ erreur }}</p>
+  {% endfor %}
+</div>

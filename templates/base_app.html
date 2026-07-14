@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block body %}
+<a class="lien-evitement" href="#contenu-principal">Aller au contenu principal</a>
+
+<div class="mise-en-page-app">
+  <aside class="barre-laterale">
+    <a class="entete__marque barre-laterale__marque" href="{% url 'core:tableau_de_bord' %}">ParoisseConnect</a>
+    <nav aria-label="Navigation principale">
+      <ul class="onglets-missel">
+        <li>
+          <a href="{% url 'core:tableau_de_bord' %}"
+             class="{% if request.resolver_match.view_name == 'core:tableau_de_bord' %}est-actif{% endif %}">
+            Tableau de bord
+          </a>
+        </li>
+        {% if nav_paroissiens %}
+        <li><span class="onglet onglet--a-venir">Paroissiens<small>Bientôt disponible</small></span></li>
+        {% endif %}
+        {% if nav_sacrements %}
+        <li><span class="onglet onglet--a-venir">Sacrements<small>Bientôt disponible</small></span></li>
+        {% endif %}
+        {% if nav_celebrations %}
+        <li><span class="onglet onglet--a-venir">Célébrations<small>Bientôt disponible</small></span></li>
+        {% endif %}
+        {% if nav_finances %}
+        <li><span class="onglet onglet--a-venir">Finances<small>Bientôt disponible</small></span></li>
+        {% endif %}
+        {% if nav_communication %}
+        <li><span class="onglet onglet--a-venir">Communication<small>Bientôt disponible</small></span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </aside>
+
+  <div class="zone-app">
+    <header class="barre-superieure">
+      <span class="barre-superieure__paroisse">
+        {{ request.user.paroisse.nom|default:"ParoisseConnect" }}
+      </span>
+      <div class="barre-superieure__compte">
+        <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+        <form class="forme-deconnexion" method="post" action="{% url 'comptes:deconnexion' %}">
+          {% csrf_token %}
+          <button type="submit" class="lien-deconnexion">Se déconnecter</button>
+        </form>
+      </div>
+    </header>
+
+    <main id="contenu-principal" class="contenu-app">
+      {% include "partials/_messages.html" %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+{% endblock %}

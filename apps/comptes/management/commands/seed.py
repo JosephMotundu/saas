@@ -47,7 +47,7 @@ class Command(BaseCommand):
             nom="Saint Raphaël",
             defaults=dict(
                 diocese="Kinshasa",
-                adresse="12 avenue de la Cathédrale",
+                adresse="Boulevard du 30 Juin",
                 ville="Kinshasa",
                 latitude=-4.325,
                 longitude=15.322,

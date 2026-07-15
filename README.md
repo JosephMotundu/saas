@@ -143,7 +143,23 @@ Le projet est construit par étapes (voir brief).
   célébration + intention, don + reçu, annonce). Le reste de l'étape 11
   (commande `backup`, admin complet — déjà largement fait au fil des
   apps) reste à finir.
-- ⏳ Étape 9 — API DRF + JWT + géocodage Nominatim
+- ✅ Étape 9 — API DRF + JWT + géocodage Nominatim (`apps/api`) :
+  - Endpoints REST pour paroissiens, célébrations, intentions de messe,
+    dons, annonces — lecture/écriture selon le rôle (`creer_permission_role`,
+    équivalent DRF de `RoleRequisMixin`).
+  - Authentification JWT (`/api/jeton/`, `/api/jeton/rafraichir/`) en plus
+    de la session (utile pour que le tableau de bord appelle l'API sans
+    jeton séparé).
+  - Isolation multi-tenant explicite par ViewSet (`IsolationParoisseMixin`)
+    plutôt que de dépendre du manager automatique : l'authentification JWT
+    a lieu *après* `ParoisseCouranteMiddleware` dans le cycle de requête,
+    donc la ContextVar n'est pas fiable pour les appels au jeton seul.
+  - Créer un don via l'API passe par `services.enregistrer_don_avec_recu` :
+    même garantie de transaction atomique que depuis l'interface web.
+  - `/api/paroisse/geocoder/` (Curé uniquement) consomme l'API Nominatim
+    pour géocoder l'adresse de la paroisse ; bouton « Localiser
+    automatiquement » sur le tableau de bord, qui recharge ensuite la
+    carte Leaflet avec les coordonnées obtenues.
 - ⏳ Étape 10 — 2FA TOTP
 
 ## Rôles et accès aux modules

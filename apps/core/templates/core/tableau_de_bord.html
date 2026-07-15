@@ -37,7 +37,16 @@
   {% endif %}
 </div>
 
-<h2>Localisation de la paroisse</h2>
+<div class="barre-actions">
+  <h2>Localisation de la paroisse</h2>
+  {% if est_cure %}
+  <form id="form-geocoder" style="display:none">{% csrf_token %}</form>
+  <button type="button" class="bouton-secondaire" id="bouton-geocoder">
+    Localiser automatiquement
+  </button>
+  {% endif %}
+</div>
+
 {% if paroisse and paroisse.latitude and paroisse.longitude %}
   <div id="carte-paroisse"
        class="carte-paroisse"
@@ -46,8 +55,9 @@
        data-nom="{{ paroisse.nom }}"></div>
 {% else %}
   <p class="avis-localisation">
-    Localisation non renseignée. Elle sera géocodée automatiquement depuis
-    l'adresse de la paroisse (voir module API).
+    Localisation non renseignée.
+    {% if est_cure %}Cliquez sur « Localiser automatiquement » pour la
+    géocoder depuis l'adresse de la paroisse.{% endif %}
   </p>
 {% endif %}
 {% endblock %}
@@ -66,6 +76,33 @@
       maxZoom: 19,
     }).addTo(map);
     L.marker([lat, lng]).addTo(map).bindPopup(nom);
+  }
+
+  const boutonGeocoder = document.getElementById("bouton-geocoder");
+  if (boutonGeocoder) {
+    boutonGeocoder.addEventListener("click", async () => {
+      boutonGeocoder.disabled = true;
+      boutonGeocoder.textContent = "Localisation en cours…";
+      const csrfToken = document.querySelector(
+        "#form-geocoder [name=csrfmiddlewaretoken]"
+      ).value;
+      try {
+        const reponse = await fetch("/api/paroisse/geocoder/", {
+          method: "POST",
+          headers: { "X-CSRFToken": csrfToken },
+        });
+        if (reponse.ok) {
+          window.location.reload();
+          return;
+        }
+        const donnees = await reponse.json();
+        alert(donnees.detail || "Échec de la localisation.");
+      } catch (erreur) {
+        alert("Erreur réseau lors de la localisation.");
+      }
+      boutonGeocoder.disabled = false;
+      boutonGeocoder.textContent = "Localiser automatiquement";
+    });
   }
 </script>
 {% endblock %}

@@ -1,12 +1,21 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class Paroisse(models.Model):
     """Le tenant : chaque paroisse cliente de l'instance ParoisseConnect."""
 
     nom = models.CharField("nom", max_length=200, unique=True)
+    slug = models.SlugField(
+        "identifiant public",
+        max_length=220,
+        unique=True,
+        blank=True,
+        help_text="Généré automatiquement depuis le nom ; utilisé dans l'URL de la "
+        "page publique de la paroisse (communiqués visibles sans compte).",
+    )
     diocese = models.CharField("diocèse", max_length=200)
     adresse = models.CharField(
         "adresse",
@@ -44,6 +53,17 @@ class Paroisse(models.Model):
 
     def __str__(self):
         return self.nom
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.nom) or "paroisse"
+            slug = base
+            compteur = 1
+            while Paroisse.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                compteur += 1
+                slug = f"{base}-{compteur}"
+            self.slug = slug
+        super().save(*args, **kwargs)
 
 
 class Abonnement(models.Model):

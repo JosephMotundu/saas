@@ -18,6 +18,7 @@ urlpatterns = [
     path("communication/", include("apps.communication.urls")),
     path("api/", include("apps.api.urls")),
     path("plateforme/", include("apps.plateforme.urls")),
+    path("paroisses/<slug:slug>/", include("apps.communication.urls_publiques")),
     path("", include("apps.core.urls")),
 ]
 

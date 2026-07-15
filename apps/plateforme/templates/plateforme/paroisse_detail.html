@@ -34,6 +34,12 @@
     </dd>
     <dt>Créée le</dt>
     <dd class="numerique">{{ paroisse.date_creation|date:"d/m/Y" }}</dd>
+    <dt>Page publique</dt>
+    <dd>
+      <a href="{% url 'communication_publique:annonce_liste' slug=paroisse.slug %}" target="_blank" rel="noopener">
+        {{ request.scheme }}://{{ request.get_host }}{% url 'communication_publique:annonce_liste' slug=paroisse.slug %}
+      </a>
+    </dd>
   </dl>
 </div>
 

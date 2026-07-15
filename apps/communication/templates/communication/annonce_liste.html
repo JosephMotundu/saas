@@ -8,6 +8,15 @@
   <a class="bouton-principal" href="{% url 'communication:annonce_creer' %}">Publier une annonce</a>
 </div>
 
+{% if request.paroisse.slug %}
+<p class="sous-titre">
+  Page publique des communiqués (consultable sans compte) :
+  <a href="{% url 'communication_publique:annonce_liste' slug=request.paroisse.slug %}" target="_blank" rel="noopener">
+    {{ request.scheme }}://{{ request.get_host }}{% url 'communication_publique:annonce_liste' slug=request.paroisse.slug %}
+  </a>
+</p>
+{% endif %}
+
 {% if annonces %}
 <table class="table-registre">
   <thead>
@@ -16,6 +25,7 @@
       <th scope="col">Date de publication</th>
       <th scope="col">Destinataires</th>
       <th scope="col">Auteur</th>
+      <th scope="col">Publique</th>
     </tr>
   </thead>
   <tbody>
@@ -25,6 +35,7 @@
       <td class="numerique">{{ annonce.date_publication }}</td>
       <td>{{ annonce.groupe_cible|default:"Toute la paroisse" }}</td>
       <td>{{ annonce.auteur.get_full_name|default:annonce.auteur.username }}</td>
+      <td>{% if annonce.publique %}<span class="etiquette">Publique</span>{% else %}—{% endif %}</td>
     </tr>
     {% endfor %}
   </tbody>

@@ -194,6 +194,20 @@ Le projet est construit par étapes (voir brief).
     complet.
   - Un superadmin qui se connecte est redirigé vers `/plateforme/` plutôt
     que vers un tableau de bord vide (il n'appartient à aucune paroisse).
+- ✅ Page publique des communiqués (hors plan initial) — `/paroisses/<slug>/annonces/`,
+  consultable **sans compte** :
+  - `Paroisse.slug` : identifiant unique généré automatiquement depuis le
+    nom (avec désambiguïsation en cas de collision), migré en 3 étapes
+    sûres (ajout du champ, backfill des paroisses existantes, puis
+    contrainte d'unicité) pour ne jamais casser une base déjà peuplée.
+  - `Annonce.publique` (défaut `False`) : une annonce n'est visible sur la
+    page publique que si le Secrétaire/Curé l'y a explicitement autorisée
+    — les communiqués internes ne fuitent pas vers les visiteurs.
+  - La page publique d'une paroisse suspendue renvoie 404, comme le reste
+    de l'application.
+  - Lien direct vers cette page affiché dans la liste interne des
+    annonces et sur la fiche paroisse de `/plateforme/`, pour que
+    l'équipe et le superadmin la retrouvent facilement.
 - ⏳ Étape 10 — 2FA TOTP
 
 ## Rôles et accès aux modules

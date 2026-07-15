@@ -7,7 +7,7 @@ from .models import Annonce
 class AnnonceForm(forms.ModelForm):
     class Meta:
         model = Annonce
-        fields = ["titre", "contenu", "date_publication", "groupe_cible"]
+        fields = ["titre", "contenu", "date_publication", "groupe_cible", "publique"]
         widgets = {"date_publication": forms.DateInput(attrs={"type": "date"})}
 
     def __init__(self, *args, **kwargs):

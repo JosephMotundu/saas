@@ -25,6 +25,11 @@ class Annonce(models.Model):
         on_delete=models.SET_NULL,
         help_text="Laisser vide pour une annonce visible de toute la paroisse.",
     )
+    publique = models.BooleanField(
+        "visible publiquement",
+        default=False,
+        help_text="Affichée sur la page publique de la paroisse, consultable sans compte.",
+    )
     paroisse = models.ForeignKey(
         Paroisse, verbose_name="paroisse", related_name="annonces", on_delete=models.PROTECT
     )

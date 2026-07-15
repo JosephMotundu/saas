@@ -1,0 +1,44 @@
+{% extends "base_public.html" %}
+
+{% block title %}Communiqués — {{ paroisse.nom }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section__entete">
+      <p class="suscription">{{ paroisse.nom }}</p>
+      <h1>Communiqués de la paroisse</h1>
+      <p>{{ paroisse.ville }}{% if paroisse.diocese %} — diocèse de {{ paroisse.diocese }}{% endif %}</p>
+    </div>
+
+    {% if annonces %}
+    <div class="row g-4">
+      {% for annonce in annonces %}
+      <div class="col-12 col-md-6">
+        <div class="carte">
+          <p class="sous-titre numerique">{{ annonce.date_publication }}</p>
+          <h3><a href="{% url 'communication_publique:annonce_detail' slug=paroisse.slug pk=annonce.pk %}">{{ annonce.titre }}</a></h3>
+          <p>{{ annonce.contenu|truncatewords:30 }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination-registre">
+      {% if page_obj.has_previous %}
+        <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+      {% endif %}
+      <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <p class="etat-vide">Aucun communiqué public pour l'instant.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

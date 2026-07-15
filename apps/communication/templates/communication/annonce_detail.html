@@ -8,6 +8,7 @@
   Publiée le <span class="numerique">{{ annonce.date_publication }}</span>
   par {{ annonce.auteur.get_full_name|default:annonce.auteur.username }}
   &mdash; {{ annonce.groupe_cible|default:"toute la paroisse" }}
+  {% if annonce.publique %}&mdash; <span class="etiquette">Publique</span>{% endif %}
 </p>
 
 <div class="fiche">

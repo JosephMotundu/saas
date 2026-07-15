@@ -8,48 +8,42 @@
     <div class="section__entete">
       <p class="suscription">Tarifs</p>
       <h1>Une offre par taille de paroisse</h1>
-      <p>Démonstration disponible sans engagement.</p>
+      <p>Prix en dollars américains. Démonstration disponible sans engagement.</p>
     </div>
 
     <div class="row g-4 justify-content-center">
+      {% for valeur, libelle, limites in offres %}
       <div class="col-12 col-md-4">
-        <div class="carte carte-tarif">
-          <h3>Essentiel</h3>
-          <p class="carte-tarif__prix">25 €<span class="carte-tarif__periode">/mois</span></p>
+        <div class="carte carte-tarif{% if valeur == 'standard' %} carte-tarif--mise-en-avant{% endif %}">
+          <h3>{{ libelle }}</h3>
+          <p class="carte-tarif__prix">
+            {{ limites.prix_affiche }}
+          </p>
           <ul>
-            <li>Paroissiens &amp; familles</li>
-            <li>Registres sacramentels</li>
-            <li>1 utilisateur secrétariat</li>
+            <li>Sacrements, célébrations &amp; finances</li>
+            {% if "paroissiens" in limites.modules %}
+              {% if limites.max_paroissiens %}
+                <li>Paroissiens &amp; familles (jusqu'à {{ limites.max_paroissiens }} membres)</li>
+              {% else %}
+                <li>Paroissiens &amp; familles (illimité)</li>
+              {% endif %}
+            {% endif %}
+            {% if "communication" in limites.modules %}
+              <li>Communication &amp; page publique</li>
+            {% endif %}
+            {% if limites.max_utilisateurs_supplementaires %}
+              <li>Jusqu'à {{ limites.max_utilisateurs_supplementaires }} utilisateurs en plus du Curé</li>
+            {% else %}
+              <li>Utilisateurs illimités</li>
+            {% endif %}
           </ul>
-          <a class="bouton-secondaire" href="{% url 'core:souscription' %}?offre=essentiel">Choisir Essentiel</a>
+          <a class="{% if valeur == 'standard' %}bouton-principal{% else %}bouton-secondaire{% endif %}"
+             href="{% url 'core:souscription' %}?offre={{ valeur }}">
+            Choisir {{ libelle }}
+          </a>
         </div>
       </div>
-      <div class="col-12 col-md-4">
-        <div class="carte carte-tarif carte-tarif--mise-en-avant">
-          <h3>Standard</h3>
-          <p class="carte-tarif__prix">49 €<span class="carte-tarif__periode">/mois</span></p>
-          <ul>
-            <li>Tout Essentiel</li>
-            <li>Célébrations &amp; intentions de messe</li>
-            <li>Dons &amp; reçus fiscaux</li>
-            <li>Jusqu'à 5 utilisateurs</li>
-          </ul>
-          <a class="bouton-principal" href="{% url 'core:souscription' %}?offre=standard">Choisir Standard</a>
-        </div>
-      </div>
-      <div class="col-12 col-md-4">
-        <div class="carte carte-tarif">
-          <h3>Diocèse</h3>
-          <p class="carte-tarif__prix">Sur devis</p>
-          <ul>
-            <li>Tout Standard</li>
-            <li>Plusieurs paroisses</li>
-            <li>Utilisateurs illimités</li>
-            <li>Accompagnement dédié</li>
-          </ul>
-          <a class="bouton-secondaire" href="{% url 'core:souscription' %}?offre=diocese">Choisir Diocèse</a>
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
 </section>

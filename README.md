@@ -208,6 +208,28 @@ Le projet est construit par étapes (voir brief).
   - Lien direct vers cette page affiché dans la liste interne des
     annonces et sur la fiche paroisse de `/plateforme/`, pour que
     l'équipe et le superadmin la retrouvent facilement.
+- ✅ Limites réelles par offre (hors plan initial) — `Abonnement.LIMITES`
+  (`apps/comptes/models.py`), source unique utilisée à la fois par la page
+  tarifs (affichage) et par les vues (contrôle d'accès) :
+  - **Essentiel** (15 $/mois) : Sacrements, Célébrations, Finances. Pas de
+    Paroissiens ni Communication. Jusqu'à 3 utilisateurs en plus du Curé.
+  - **Standard** (35 $/mois) : + Paroissiens (jusqu'à 2000 membres).
+    Utilisateurs illimités. Communication toujours exclue.
+  - **Diocèse** (sur devis) : tout illimité + Communication (et donc la
+    page publique des communiqués, qui en dépend).
+  - `ModuleAutoriseMixin` (`apps/comptes/mixins.py`) bloque réellement les
+    vues d'un module non inclus (redirection + message), pas seulement la
+    navigation — appliqué à `paroissiens` et `communication`. Si une
+    paroisse n'a pas encore d'`Abonnement` (fixture de test, compte créé
+    hors du flux normal), l'accès reste ouvert : la restriction est une
+    règle de facturation, pas une isolation de sécurité.
+  - La limite de paroissiens et la limite d'utilisateurs sont vérifiées au
+    moment de la création (`ParoissienCreateView`, `InvitationCreateView`),
+    pas seulement affichées — testé en créant réellement 2000 paroissiens
+    puis en vérifiant que le 2001ᵉ est refusé.
+  - Downgrade automatique de la page publique : si l'offre d'une paroisse
+    n'inclut plus `communication`, sa page `/paroisses/<slug>/annonces/`
+    renvoie 404 elle aussi, cohérent avec « communication → page publique ».
 - ⏳ Étape 10 — 2FA TOTP
 
 ## Rôles et accès aux modules

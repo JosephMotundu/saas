@@ -10,7 +10,7 @@ from django.views.generic import ListView, TemplateView, UpdateView, View
 
 from .forms import ChangerOffreForm, ConnexionForm, InvitationForm, ProfilForm
 from .mixins import ExigeParoisseMixin, FiltrageParoisseMixin, RoleRequisMixin
-from .models import Utilisateur
+from .models import Abonnement, Utilisateur
 
 
 class ConnexionView(LoginView):
@@ -68,6 +68,24 @@ class InvitationCreateView(RoleRequisMixin, ExigeParoisseMixin, View):
             return render(request, self.template_name, {"form": form})
 
         donnees = form.cleaned_data
+        abonnement = getattr(request.paroisse, "abonnement", None)
+        if abonnement is not None and donnees["role"] != "Curé":
+            limite = abonnement.max_utilisateurs_supplementaires()
+            if limite is not None:
+                compte_actuel = (
+                    Utilisateur.objects.filter(paroisse=request.paroisse)
+                    .exclude(groups__name="Curé")
+                    .count()
+                )
+                if compte_actuel >= limite:
+                    messages.error(
+                        request,
+                        f"Votre offre {abonnement.get_offre_display()} est limitée à "
+                        f"{limite} utilisateurs en plus du Curé. Passez à une offre "
+                        "supérieure pour en inviter davantage.",
+                    )
+                    return redirect("comptes:equipe")
+
         mot_de_passe_temporaire = secrets.token_urlsafe(9)
         membre = Utilisateur.objects.create_user(
             username=donnees["nom_utilisateur"],
@@ -109,6 +127,10 @@ class AbonnementView(RoleRequisMixin, ExigeParoisseMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         abonnement = self.request.paroisse.abonnement
         context["abonnement"] = abonnement
+        context["limites"] = abonnement.limites()
+        context["toutes_les_offres"] = [
+            (valeur, libelle, Abonnement.LIMITES[valeur]) for valeur, libelle in Abonnement.OFFRE_CHOICES
+        ]
         context.setdefault("form", ChangerOffreForm(initial={"offre": abonnement.offre}))
         return context
 

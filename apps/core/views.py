@@ -31,6 +31,13 @@ class FonctionnalitesView(TemplateView):
 class TarifsView(TemplateView):
     template_name = "core/tarifs.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["offres"] = [
+            (valeur, libelle, Abonnement.LIMITES[valeur]) for valeur, libelle in OFFRES
+        ]
+        return context
+
 
 class InscriptionView(FormView):
     """Souscription réelle : crée la paroisse, son abonnement et le compte

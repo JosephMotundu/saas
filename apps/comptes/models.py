@@ -83,6 +83,33 @@ class Abonnement(models.Model):
         ("annule", "Annulé"),
     ]
 
+    # Ce que chaque offre inclut réellement — source unique utilisée à la
+    # fois par la page tarifs (affichage) et par les vues (contrôle
+    # d'accès réel, pas seulement du texte marketing). `max_*=None`
+    # signifie « illimité ».
+    LIMITES = {
+        "essentiel": {
+            "prix_affiche": "15 $ / mois",
+            "max_utilisateurs_supplementaires": 3,
+            "max_paroissiens": None,
+            "modules": frozenset({"sacrements", "celebrations", "finances"}),
+        },
+        "standard": {
+            "prix_affiche": "35 $ / mois",
+            "max_utilisateurs_supplementaires": None,
+            "max_paroissiens": 2000,
+            "modules": frozenset({"sacrements", "celebrations", "finances", "paroissiens"}),
+        },
+        "diocese": {
+            "prix_affiche": "Sur devis",
+            "max_utilisateurs_supplementaires": None,
+            "max_paroissiens": None,
+            "modules": frozenset(
+                {"sacrements", "celebrations", "finances", "paroissiens", "communication"}
+            ),
+        },
+    }
+
     paroisse = models.OneToOneField(
         Paroisse, verbose_name="paroisse", related_name="abonnement", on_delete=models.CASCADE
     )
@@ -109,6 +136,21 @@ class Abonnement(models.Model):
         self.statut = "actif"
         self.date_annulation = None
         self.save(update_fields=["statut", "date_annulation"])
+
+    def limites(self):
+        return self.LIMITES[self.offre]
+
+    def module_autorise(self, nom_module):
+        return nom_module in self.limites()["modules"]
+
+    def max_utilisateurs_supplementaires(self):
+        return self.limites()["max_utilisateurs_supplementaires"]
+
+    def max_paroissiens(self):
+        return self.limites()["max_paroissiens"]
+
+    def prix_affiche(self):
+        return self.limites()["prix_affiche"]
 
 
 class Utilisateur(AbstractUser):

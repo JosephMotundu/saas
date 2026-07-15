@@ -53,3 +53,28 @@ class ExigeParoisseMixin:
             messages.error(request, "Cette page suppose un compte rattaché à une paroisse.")
             return redirect("core:tableau_de_bord")
         return super().dispatch(request, *args, **kwargs)
+
+
+class ModuleAutoriseMixin:
+    """Bloque une vue si le module (`module_requis`) n'est pas inclus dans
+    l'offre de la paroisse — les tarifs ne sont pas que du texte marketing.
+    Le superadmin n'est jamais bloqué. Si la paroisse n'a pas encore
+    d'abonnement (cas de test, ou compte créé hors du flux d'inscription
+    normal), l'accès reste ouvert : la limitation est une règle de
+    facturation, pas une isolation de sécurité — elle ne doit jamais faire
+    échouer un usage interne de confiance faute de configuration."""
+
+    module_requis = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser and request.paroisse is not None:
+            abonnement = getattr(request.paroisse, "abonnement", None)
+            if abonnement is not None and not abonnement.module_autorise(self.module_requis):
+                messages.error(
+                    request,
+                    f"Le module « {self.module_requis} » n'est pas inclus dans "
+                    f"votre offre {abonnement.get_offre_display()}. Un Curé peut "
+                    "changer d'offre depuis « Abonnement ».",
+                )
+                return redirect("core:tableau_de_bord")
+        return super().dispatch(request, *args, **kwargs)

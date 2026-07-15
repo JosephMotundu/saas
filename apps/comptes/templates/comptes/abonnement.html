@@ -8,7 +8,7 @@
 <div class="fiche">
   <dl>
     <dt>Offre actuelle</dt>
-    <dd>{{ abonnement.get_offre_display }}</dd>
+    <dd>{{ abonnement.get_offre_display }} — {{ limites.prix_affiche }}</dd>
     <dt>Statut</dt>
     <dd><span class="etiquette">{{ abonnement.get_statut_display }}</span></dd>
     <dt>Depuis le</dt>
@@ -17,8 +17,49 @@
     <dt>Annulé le</dt>
     <dd class="numerique">{{ abonnement.date_annulation }}</dd>
     {% endif %}
+    <dt>Utilisateurs (hors Curé)</dt>
+    <dd>
+      {% if limites.max_utilisateurs_supplementaires %}
+        Limité à {{ limites.max_utilisateurs_supplementaires }}
+      {% else %}Illimité{% endif %}
+    </dd>
+    <dt>Paroissiens</dt>
+    <dd>
+      {% if "paroissiens" not in limites.modules %}Module non inclus
+      {% elif limites.max_paroissiens %}Limité à {{ limites.max_paroissiens }}
+      {% else %}Illimité{% endif %}
+    </dd>
+    <dt>Communication</dt>
+    <dd>{% if "communication" in limites.modules %}Incluse (avec page publique){% else %}Non incluse{% endif %}</dd>
   </dl>
 </div>
+
+<h2>Comparer les offres</h2>
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Offre</th>
+      <th scope="col">Prix</th>
+      <th scope="col">Utilisateurs</th>
+      <th scope="col">Paroissiens</th>
+      <th scope="col">Communication</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for valeur, libelle, limites_offre in toutes_les_offres %}
+    <tr{% if valeur == abonnement.offre %} class="numerique"{% endif %}>
+      <td>{{ libelle }}{% if valeur == abonnement.offre %} (actuelle){% endif %}</td>
+      <td>{{ limites_offre.prix_affiche }}</td>
+      <td>{{ limites_offre.max_utilisateurs_supplementaires|default:"Illimité" }}</td>
+      <td>
+        {% if "paroissiens" not in limites_offre.modules %}—
+        {% else %}{{ limites_offre.max_paroissiens|default:"Illimité" }}{% endif %}
+      </td>
+      <td>{% if "communication" in limites_offre.modules %}Oui{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% if abonnement.statut == "actif" %}
 <h2>Changer d'offre</h2>

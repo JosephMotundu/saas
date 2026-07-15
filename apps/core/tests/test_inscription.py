@@ -10,8 +10,10 @@ def _donnees_valides(**overrides):
     donnees = {
         "nom_paroisse": "Saint Raphaël",
         "diocese": "Kinshasa",
-        "adresse": "12 avenue de la Cathédrale",
         "ville": "Kinshasa",
+        "commune": "Gombe",
+        "quartier": "Golf",
+        "avenue": "12 avenue de la Cathédrale",
         "offre": "standard",
         "prenom": "Jean",
         "nom": "Mbala",
@@ -32,6 +34,10 @@ def test_inscription_cree_paroisse_abonnement_et_compte_cure(client):
 
     paroisse = Paroisse.objects.get(nom="Saint Raphaël")
     assert paroisse.diocese == "Kinshasa"
+    assert paroisse.commune == "Gombe"
+    assert paroisse.quartier == "Golf"
+    assert paroisse.avenue == "12 avenue de la Cathédrale"
+    assert paroisse.adresse == "12 avenue de la Cathédrale, Golf, Gombe"
 
     abonnement = Abonnement.objects.get(paroisse=paroisse)
     assert abonnement.offre == "standard"
@@ -112,3 +118,12 @@ def test_inscription_enregistre_les_coordonnees_pointees_sur_la_carte(client):
 
     assert str(paroisse.latitude) == "-4.305737"
     assert str(paroisse.longitude) == "15.302001"
+
+
+def test_inscription_sans_quartier_compose_l_adresse_sans_lui(client):
+    client.post(reverse("core:souscription"), _donnees_valides(quartier=""))
+
+    paroisse = Paroisse.objects.get(nom="Saint Raphaël")
+
+    assert paroisse.quartier == ""
+    assert paroisse.adresse == "12 avenue de la Cathédrale, Gombe"

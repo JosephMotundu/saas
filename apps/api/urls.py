@@ -11,6 +11,7 @@ from .views import (
     IntentionMesseViewSet,
     ObtenirJetonView,
     ParoissienViewSet,
+    RechercherAdresseView,
 )
 
 app_name = "api"
@@ -27,5 +28,6 @@ urlpatterns = [
     path("jeton/rafraichir/", TokenRefreshView.as_view(), name="jeton_rafraichir"),
     path("paroisse/geocoder/", GeocoderParoisseView.as_view(), name="paroisse_geocoder"),
     path("geocoder-inverse/", GeocoderInverseView.as_view(), name="geocoder_inverse"),
+    path("rechercher-adresse/", RechercherAdresseView.as_view(), name="rechercher_adresse"),
     path("", include(router.urls)),
 ]

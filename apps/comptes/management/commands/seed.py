@@ -47,8 +47,11 @@ class Command(BaseCommand):
             nom="Saint Raphaël",
             defaults=dict(
                 diocese="Kinshasa",
-                adresse="Boulevard du 30 Juin",
+                adresse="Boulevard du 30 Juin, Golf, Gombe",
                 ville="Kinshasa",
+                commune="Gombe",
+                quartier="Golf",
+                avenue="Boulevard du 30 Juin",
                 latitude=-4.325,
                 longitude=15.322,
                 telephone="+243 810 000 000",

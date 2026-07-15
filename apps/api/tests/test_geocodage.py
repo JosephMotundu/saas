@@ -87,9 +87,11 @@ def test_geocodage_inverse_est_public_et_renvoie_l_adresse(requests_get):
             "address": {
                 "house_number": "44/A",
                 "road": "Boulevard du 30 Juin",
-                "city": "Golf",
+                "suburb": "Golf",
+                "city_district": "Gombe",
+                "city": "Kinshasa",
             },
-            "display_name": "44/A, Boulevard du 30 Juin, Golf, Kinshasa, RDC",
+            "display_name": "44/A, Boulevard du 30 Juin, Golf, Gombe, Kinshasa, RDC",
         },
         raise_for_status=lambda: None,
     )
@@ -100,8 +102,12 @@ def test_geocodage_inverse_est_public_et_renvoie_l_adresse(requests_get):
     )
 
     assert reponse.status_code == 200
+    assert reponse.data["avenue"] == "44/A Boulevard du 30 Juin"
+    assert reponse.data["quartier"] == "Golf"
+    assert reponse.data["commune"] == "Gombe"
+    assert reponse.data["ville"] == "Kinshasa"
+    # Compatibilité : adresse reste dérivée de l'avenue.
     assert reponse.data["adresse"] == "44/A Boulevard du 30 Juin"
-    assert reponse.data["ville"] == "Golf"
 
 
 @patch("apps.api.views.requests.get")
@@ -124,3 +130,48 @@ def test_geocodage_inverse_exige_lat_et_lon():
     reponse = client.get(reverse("api:geocoder_inverse"))
 
     assert reponse.status_code == 400
+
+
+@patch("apps.api.views.requests.get")
+def test_recherche_adresse_combine_les_champs_dans_la_requete(requests_get):
+    requests_get.return_value = Mock(
+        status_code=200,
+        json=lambda: [
+            {"lat": "-4.305737", "lon": "15.302001", "display_name": "Boulevard du 30 Juin, Golf, Gombe"}
+        ],
+        raise_for_status=lambda: None,
+    )
+    client = APIClient()
+
+    reponse = client.get(
+        reverse("api:rechercher_adresse"),
+        {"avenue": "Boulevard du 30 Juin", "quartier": "Golf", "commune": "Gombe", "ville": "Kinshasa"},
+    )
+
+    assert reponse.status_code == 200
+    assert len(reponse.data["resultats"]) == 1
+    assert reponse.data["resultats"][0]["latitude"] == "-4.305737"
+    requete_envoyee = requests_get.call_args.kwargs["params"]["q"]
+    assert "Boulevard du 30 Juin" in requete_envoyee
+    assert "Golf" in requete_envoyee
+    assert "Gombe" in requete_envoyee
+    assert "Kinshasa" in requete_envoyee
+
+
+def test_recherche_adresse_exige_au_moins_un_champ():
+    client = APIClient()
+
+    reponse = client.get(reverse("api:rechercher_adresse"))
+
+    assert reponse.status_code == 400
+
+
+@patch("apps.api.views.requests.get")
+def test_recherche_adresse_sans_resultat(requests_get):
+    requests_get.return_value = Mock(status_code=200, json=lambda: [], raise_for_status=lambda: None)
+    client = APIClient()
+
+    reponse = client.get(reverse("api:rechercher_adresse"), {"commune": "Introuvable"})
+
+    assert reponse.status_code == 200
+    assert reponse.data["resultats"] == []

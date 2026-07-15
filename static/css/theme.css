@@ -661,6 +661,31 @@ a:hover {
   overflow: hidden;
 }
 
+.resultats-recherche {
+  list-style: none;
+  margin: 0.75rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.resultat-recherche {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  background: #fff;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.resultat-recherche:hover {
+  background: var(--papier-releve);
+}
+
 .avis-localisation {
   background: var(--papier-releve);
   border: 1px dashed var(--filet);

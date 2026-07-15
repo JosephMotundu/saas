@@ -49,12 +49,20 @@ class InscriptionView(FormView):
 
     def form_valid(self, form):
         donnees = form.cleaned_data
+        adresse_composee = ", ".join(
+            partie
+            for partie in [donnees["avenue"], donnees.get("quartier"), donnees["commune"]]
+            if partie
+        )
         with transaction.atomic():
             paroisse = Paroisse.objects.create(
                 nom=donnees["nom_paroisse"],
                 diocese=donnees["diocese"],
-                adresse=donnees["adresse"],
+                adresse=adresse_composee,
                 ville=donnees["ville"],
+                commune=donnees["commune"],
+                quartier=donnees.get("quartier", ""),
+                avenue=donnees["avenue"],
                 email=donnees["email"],
                 latitude=donnees.get("latitude"),
                 longitude=donnees.get("longitude"),

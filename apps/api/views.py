@@ -185,23 +185,87 @@ class GeocoderInverseView(APIView):
             return Response({"detail": "Aucune adresse trouvée à cet endroit."}, status=404)
 
         composants = resultat.get("address", {})
-        rue = " ".join(
+        avenue = " ".join(
             partie
             for partie in [composants.get("house_number"), composants.get("road")]
             if partie
+        )
+        quartier = (
+            composants.get("suburb")
+            or composants.get("neighbourhood")
+            or composants.get("quarter")
+            or ""
+        )
+        commune = (
+            composants.get("city_district")
+            or composants.get("borough")
+            or composants.get("municipality")
+            or ""
         )
         ville = (
             composants.get("city")
             or composants.get("town")
             or composants.get("village")
-            or composants.get("municipality")
             or ""
         )
 
         return Response(
             {
-                "adresse": rue or resultat.get("display_name", ""),
+                "avenue": avenue,
+                "quartier": quartier,
+                "commune": commune,
                 "ville": ville,
+                # Composée pour tout code qui attend encore une adresse à plat.
+                "adresse": avenue or resultat.get("display_name", ""),
                 "affichage": resultat.get("display_name", ""),
+            }
+        )
+
+
+class RechercherAdresseView(APIView):
+    """Recherche d'adresse (texte -> coordonnées), publique : combine les
+    champs avenue/quartier/commune/ville déjà saisis pour cibler la requête
+    Nominatim, plutôt que de faire deviner l'utilisateur sur la carte."""
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        parties = [
+            request.query_params.get("avenue", "").strip(),
+            request.query_params.get("quartier", "").strip(),
+            request.query_params.get("commune", "").strip(),
+            request.query_params.get("ville", "").strip(),
+        ]
+        requete = ", ".join(partie for partie in parties if partie)
+        if not requete:
+            return Response(
+                {"detail": "Renseignez au moins l'avenue, le quartier, la commune ou la ville."},
+                status=400,
+            )
+
+        try:
+            reponse = requests.get(
+                f"{settings.NOMINATIM_BASE_URL}/search",
+                params={"q": requete, "format": "json", "limit": 5},
+                headers={"User-Agent": settings.NOMINATIM_USER_AGENT},
+                timeout=5,
+            )
+            reponse.raise_for_status()
+            resultats = reponse.json()
+        except requests.RequestException as erreur:
+            return Response(
+                {"detail": f"Service de géocodage indisponible ({erreur})."}, status=503
+            )
+
+        return Response(
+            {
+                "resultats": [
+                    {
+                        "latitude": resultat["lat"],
+                        "longitude": resultat["lon"],
+                        "affichage": resultat.get("display_name", ""),
+                    }
+                    for resultat in resultats
+                ]
             }
         )

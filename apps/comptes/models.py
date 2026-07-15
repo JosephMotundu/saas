@@ -8,8 +8,16 @@ class Paroisse(models.Model):
 
     nom = models.CharField("nom", max_length=200, unique=True)
     diocese = models.CharField("diocèse", max_length=200)
-    adresse = models.CharField("adresse", max_length=255)
+    adresse = models.CharField(
+        "adresse",
+        max_length=255,
+        help_text="Composée automatiquement à l'inscription à partir de l'avenue, "
+        "du quartier et de la commune ; modifiable librement ensuite.",
+    )
     ville = models.CharField("ville", max_length=100)
+    commune = models.CharField("commune", max_length=100, blank=True)
+    quartier = models.CharField("quartier", max_length=100, blank=True)
+    avenue = models.CharField("avenue", max_length=200, blank=True)
     latitude = models.DecimalField(
         "latitude", max_digits=9, decimal_places=6, null=True, blank=True
     )

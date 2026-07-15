@@ -26,19 +26,27 @@
     <h2>Votre paroisse</h2>
     {% include "partials/_form_field.html" with champ=form.nom_paroisse %}
     {% include "partials/_form_field.html" with champ=form.diocese %}
+    {% include "partials/_form_field.html" with champ=form.ville %}
+    {% include "partials/_form_field.html" with champ=form.commune %}
+    {% include "partials/_form_field.html" with champ=form.quartier %}
+    {% include "partials/_form_field.html" with champ=form.avenue %}
 
     <div class="champ">
       <label>Localisation</label>
       <p class="champ__aide">
-        Cliquez sur la carte à l'emplacement de votre paroisse : l'adresse et
-        la ville se remplissent automatiquement (vous pouvez ensuite les
-        corriger à la main).
+        Difficile de se repérer sur la carte ? Renseignez la ville, la
+        commune, le quartier et/ou l'avenue ci-dessus puis cliquez sur
+        « Rechercher sur la carte » — ou cliquez directement à
+        l'emplacement de votre paroisse, les champs se complètent
+        automatiquement.
       </p>
+      <button type="button" id="bouton-rechercher" class="bouton-secondaire">
+        Rechercher sur la carte
+      </button>
+      <ul id="resultats-recherche" class="resultats-recherche"></ul>
       <div id="carte-localisation" class="carte-paroisse"></div>
     </div>
 
-    {% include "partials/_form_field.html" with champ=form.adresse %}
-    {% include "partials/_form_field.html" with champ=form.ville %}
     {{ form.latitude }}
     {{ form.longitude }}
     {% include "partials/_form_field.html" with champ=form.offre %}
@@ -77,8 +85,12 @@
   let marqueur = null;
   const champLatitude = document.getElementById("id_latitude");
   const champLongitude = document.getElementById("id_longitude");
-  const champAdresse = document.getElementById("id_adresse");
+  const champAvenue = document.getElementById("id_avenue");
+  const champQuartier = document.getElementById("id_quartier");
+  const champCommune = document.getElementById("id_commune");
   const champVille = document.getElementById("id_ville");
+  const listeResultats = document.getElementById("resultats-recherche");
+  const boutonRechercher = document.getElementById("bouton-rechercher");
 
   if (champLatitude.value && champLongitude.value) {
     marqueur = L.marker([latitudeInitiale, longitudeInitiale]).addTo(carte);
@@ -89,6 +101,7 @@
       carte.removeLayer(marqueur);
     }
     marqueur = L.marker([lat, lon]).addTo(carte);
+    carte.setView([lat, lon], 16);
     champLatitude.value = lat;
     champLongitude.value = lon;
 
@@ -96,7 +109,9 @@
       const reponse = await fetch(`/api/geocoder-inverse/?lat=${lat}&lon=${lon}`);
       if (reponse.ok) {
         const donnees = await reponse.json();
-        if (donnees.adresse) champAdresse.value = donnees.adresse;
+        if (donnees.avenue) champAvenue.value = donnees.avenue;
+        if (donnees.quartier) champQuartier.value = donnees.quartier;
+        if (donnees.commune) champCommune.value = donnees.commune;
         if (donnees.ville) champVille.value = donnees.ville;
       }
     } catch (erreur) {
@@ -106,6 +121,49 @@
 
   carte.on("click", (evenement) => {
     placerMarqueur(evenement.latlng.lat, evenement.latlng.lng);
+  });
+
+  boutonRechercher.addEventListener("click", async () => {
+    listeResultats.innerHTML = "";
+    const parametres = new URLSearchParams({
+      avenue: champAvenue.value,
+      quartier: champQuartier.value,
+      commune: champCommune.value,
+      ville: champVille.value,
+    });
+
+    boutonRechercher.disabled = true;
+    boutonRechercher.textContent = "Recherche en cours…";
+    try {
+      const reponse = await fetch(`/api/rechercher-adresse/?${parametres}`);
+      const donnees = await reponse.json();
+      if (!reponse.ok) {
+        alert(donnees.detail || "Échec de la recherche.");
+        return;
+      }
+      if (donnees.resultats.length === 0) {
+        listeResultats.innerHTML = "<li>Aucun résultat. Essayez avec moins de champs.</li>";
+        return;
+      }
+      donnees.resultats.forEach((resultat) => {
+        const item = document.createElement("li");
+        const bouton = document.createElement("button");
+        bouton.type = "button";
+        bouton.className = "resultat-recherche";
+        bouton.textContent = resultat.affichage;
+        bouton.addEventListener("click", () => {
+          placerMarqueur(resultat.latitude, resultat.longitude);
+          listeResultats.innerHTML = "";
+        });
+        item.appendChild(bouton);
+        listeResultats.appendChild(item);
+      });
+    } catch (erreur) {
+      alert("Erreur réseau lors de la recherche.");
+    } finally {
+      boutonRechercher.disabled = false;
+      boutonRechercher.textContent = "Rechercher sur la carte";
+    }
   });
 </script>
 {% endblock %}

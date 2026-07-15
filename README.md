@@ -160,13 +160,19 @@ Le projet est construit par étapes (voir brief).
     pour géocoder l'adresse de la paroisse ; bouton « Localiser
     automatiquement » sur le tableau de bord, qui recharge ensuite la
     carte Leaflet avec les coordonnées obtenues.
+  - `Paroisse` a des champs d'adresse structurés — `ville`, `commune`,
+    `quartier`, `avenue` — plutôt qu'un unique champ « adresse » (toujours
+    présent, composé automatiquement des trois derniers à l'inscription).
   - `/api/geocoder-inverse/` (public, sans authentification — utilisé avant
     la création de tout compte) : géocodage **inverse** (coordonnées →
-    adresse). Sur la page de souscription, une carte Leaflet interactive
-    permet de cliquer l'emplacement de la paroisse ; l'adresse et la ville
-    se remplissent automatiquement, et les coordonnées sont enregistrées
-    dès la création de la paroisse — pas besoin de repasser par
-    « Localiser automatiquement » ensuite.
+    avenue/quartier/commune/ville). Sur la page de souscription, une carte
+    Leaflet cliquable remplit ces champs automatiquement, et les
+    coordonnées sont enregistrées dès la création de la paroisse — pas
+    besoin de repasser par « Localiser automatiquement » ensuite.
+  - `/api/rechercher-adresse/` (public) : géocodage **direct** combinant
+    les champs déjà saisis (avenue, quartier, commune, ville) en une seule
+    requête Nominatim, pour aider à se repérer sur la carte sans deviner —
+    utile quand plusieurs communes partagent le nom d'une avenue.
 - ✅ Console de supervision plateforme (hors plan initial) — `apps/plateforme`,
   espace `/plateforme/` réservé au superadmin d'instance (`is_superuser`) :
   - Liste de toutes les paroisses inscrites avec leurs statistiques

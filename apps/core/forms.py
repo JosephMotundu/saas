@@ -13,15 +13,21 @@ class InscriptionForm(forms.Form):
     apps.core.views.InscriptionView). Pas de paiement — l'offre choisie est
     activée immédiatement, en mode démonstration."""
 
-    # Paroisse
+    # Paroisse — adresse découpée en champs structurés (usage RDC : ville,
+    # commune, quartier, avenue), plutôt qu'un champ « adresse » unique.
     nom_paroisse = forms.CharField(label="Nom de la paroisse", max_length=200)
     diocese = forms.CharField(label="Diocèse", max_length=200)
-    adresse = forms.CharField(
-        label="Adresse",
-        max_length=255,
-        help_text="Pointez sur la carte ci-dessous pour la remplir automatiquement, ou saisissez-la à la main.",
-    )
     ville = forms.CharField(label="Ville", max_length=100)
+    commune = forms.CharField(label="Commune", max_length=100)
+    quartier = forms.CharField(label="Quartier", max_length=100, required=False)
+    avenue = forms.CharField(
+        label="Avenue",
+        max_length=200,
+        help_text=(
+            "Recherchez ou pointez sur la carte ci-dessous pour vous repérer, "
+            "ou saisissez ces champs à la main."
+        ),
+    )
     offre = forms.ChoiceField(label="Offre choisie", choices=OFFRES)
     latitude = forms.DecimalField(
         required=False, widget=forms.HiddenInput(), max_digits=9, decimal_places=6

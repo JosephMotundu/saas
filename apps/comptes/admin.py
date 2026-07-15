@@ -6,9 +6,18 @@ from .models import Abonnement, Paroisse, Utilisateur
 
 @admin.register(Paroisse)
 class ParoisseAdmin(admin.ModelAdmin):
-    list_display = ("nom", "diocese", "ville", "telephone", "email", "date_creation")
-    search_fields = ("nom", "diocese", "ville")
-    list_filter = ("diocese", "ville")
+    list_display = (
+        "nom",
+        "diocese",
+        "ville",
+        "commune",
+        "quartier",
+        "telephone",
+        "email",
+        "date_creation",
+    )
+    search_fields = ("nom", "diocese", "ville", "commune", "quartier", "avenue")
+    list_filter = ("diocese", "ville", "commune")
     ordering = ("nom",)
 
     def get_queryset(self, request):

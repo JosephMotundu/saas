@@ -136,6 +136,28 @@ def test_limite_utilisateurs_essentiel(client):
     assert not Utilisateur.objects.filter(username="nouveau_membre").exists()
 
 
+def test_limite_utilisateurs_standard(client):
+    paroisse = _creer_paroisse_avec_offre("standard")
+    cure = _creer_utilisateur(paroisse, "Curé", "cure1")
+    for i in range(7):
+        _creer_utilisateur(paroisse, "Lecteur", f"lecteur{i}")
+    client.force_login(cure)
+
+    reponse = client.post(
+        reverse("comptes:equipe_inviter"),
+        {
+            "prenom": "Nouveau",
+            "nom": "Membre",
+            "email": "nouveau@example.com",
+            "nom_utilisateur": "nouveau_membre",
+            "role": "Lecteur",
+        },
+    )
+
+    assert reponse.status_code == 302
+    assert not Utilisateur.objects.filter(username="nouveau_membre").exists()
+
+
 def test_inviter_un_second_cure_ne_compte_pas_dans_la_limite(client):
     paroisse = _creer_paroisse_avec_offre("essentiel")
     cure = _creer_utilisateur(paroisse, "Curé", "cure1")

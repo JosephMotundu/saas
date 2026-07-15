@@ -96,7 +96,7 @@ class Abonnement(models.Model):
         },
         "standard": {
             "prix_affiche": "35 $ / mois",
-            "max_utilisateurs_supplementaires": None,
+            "max_utilisateurs_supplementaires": 7,
             "max_paroissiens": 2000,
             "modules": frozenset({"sacrements", "celebrations", "finances", "paroissiens"}),
         },

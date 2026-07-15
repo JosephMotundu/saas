@@ -16,9 +16,19 @@ class InscriptionForm(forms.Form):
     # Paroisse
     nom_paroisse = forms.CharField(label="Nom de la paroisse", max_length=200)
     diocese = forms.CharField(label="Diocèse", max_length=200)
-    adresse = forms.CharField(label="Adresse", max_length=255)
+    adresse = forms.CharField(
+        label="Adresse",
+        max_length=255,
+        help_text="Pointez sur la carte ci-dessous pour la remplir automatiquement, ou saisissez-la à la main.",
+    )
     ville = forms.CharField(label="Ville", max_length=100)
     offre = forms.ChoiceField(label="Offre choisie", choices=OFFRES)
+    latitude = forms.DecimalField(
+        required=False, widget=forms.HiddenInput(), max_digits=9, decimal_places=6
+    )
+    longitude = forms.DecimalField(
+        required=False, widget=forms.HiddenInput(), max_digits=9, decimal_places=6
+    )
 
     # Compte administrateur (premier Curé)
     prenom = forms.CharField(label="Prénom")

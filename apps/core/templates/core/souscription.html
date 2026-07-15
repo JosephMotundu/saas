@@ -2,6 +2,10 @@
 
 {% block title %}Souscription — ParoisseConnect{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+{% endblock %}
+
 {% block content %}
 <section class="section-etroite">
   <p class="suscription">Souscription</p>
@@ -22,8 +26,21 @@
     <h2>Votre paroisse</h2>
     {% include "partials/_form_field.html" with champ=form.nom_paroisse %}
     {% include "partials/_form_field.html" with champ=form.diocese %}
+
+    <div class="champ">
+      <label>Localisation</label>
+      <p class="champ__aide">
+        Cliquez sur la carte à l'emplacement de votre paroisse : l'adresse et
+        la ville se remplissent automatiquement (vous pouvez ensuite les
+        corriger à la main).
+      </p>
+      <div id="carte-localisation" class="carte-paroisse"></div>
+    </div>
+
     {% include "partials/_form_field.html" with champ=form.adresse %}
     {% include "partials/_form_field.html" with champ=form.ville %}
+    {{ form.latitude }}
+    {{ form.longitude }}
     {% include "partials/_form_field.html" with champ=form.offre %}
 
     <h2>Votre compte administrateur</h2>
@@ -43,4 +60,52 @@
     </button>
   </form>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  const latitudeInitiale = parseFloat("{{ form.latitude.value|default_if_none:'' }}") || -4.325;
+  const longitudeInitiale = parseFloat("{{ form.longitude.value|default_if_none:'' }}") || 15.322;
+
+  const carte = L.map("carte-localisation").setView([latitudeInitiale, longitudeInitiale], 12);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; contributeurs OpenStreetMap",
+    maxZoom: 19,
+  }).addTo(carte);
+
+  let marqueur = null;
+  const champLatitude = document.getElementById("id_latitude");
+  const champLongitude = document.getElementById("id_longitude");
+  const champAdresse = document.getElementById("id_adresse");
+  const champVille = document.getElementById("id_ville");
+
+  if (champLatitude.value && champLongitude.value) {
+    marqueur = L.marker([latitudeInitiale, longitudeInitiale]).addTo(carte);
+  }
+
+  async function placerMarqueur(lat, lon) {
+    if (marqueur) {
+      carte.removeLayer(marqueur);
+    }
+    marqueur = L.marker([lat, lon]).addTo(carte);
+    champLatitude.value = lat;
+    champLongitude.value = lon;
+
+    try {
+      const reponse = await fetch(`/api/geocoder-inverse/?lat=${lat}&lon=${lon}`);
+      if (reponse.ok) {
+        const donnees = await reponse.json();
+        if (donnees.adresse) champAdresse.value = donnees.adresse;
+        if (donnees.ville) champVille.value = donnees.ville;
+      }
+    } catch (erreur) {
+      // L'utilisateur peut toujours saisir l'adresse à la main.
+    }
+  }
+
+  carte.on("click", (evenement) => {
+    placerMarqueur(evenement.latlng.lat, evenement.latlng.lng);
+  });
+</script>
 {% endblock %}

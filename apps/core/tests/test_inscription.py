@@ -37,6 +37,9 @@ def test_inscription_cree_paroisse_abonnement_et_compte_cure(client):
     assert abonnement.offre == "standard"
     assert abonnement.statut == "actif"
 
+    assert paroisse.latitude is None
+    assert paroisse.longitude is None
+
     cure = Utilisateur.objects.get(username="cure_mbala")
     assert cure.paroisse == paroisse
     assert cure.groups.filter(name="Curé").exists()
@@ -97,3 +100,15 @@ def test_inscription_refuse_un_mot_de_passe_trop_simple(client):
 
     assert reponse.status_code == 200
     assert not Paroisse.objects.filter(nom="Saint Raphaël").exists()
+
+
+def test_inscription_enregistre_les_coordonnees_pointees_sur_la_carte(client):
+    client.post(
+        reverse("core:souscription"),
+        _donnees_valides(latitude="-4.305737", longitude="15.302001"),
+    )
+
+    paroisse = Paroisse.objects.get(nom="Saint Raphaël")
+
+    assert str(paroisse.latitude) == "-4.305737"
+    assert str(paroisse.longitude) == "15.302001"

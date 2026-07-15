@@ -56,6 +56,8 @@ class InscriptionView(FormView):
                 adresse=donnees["adresse"],
                 ville=donnees["ville"],
                 email=donnees["email"],
+                latitude=donnees.get("latitude"),
+                longitude=donnees.get("longitude"),
             )
             Abonnement.objects.create(paroisse=paroisse, offre=donnees["offre"])
             cure = Utilisateur.objects.create_user(

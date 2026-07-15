@@ -6,6 +6,7 @@ from .views import (
     AnnonceViewSet,
     CelebrationViewSet,
     DonViewSet,
+    GeocoderInverseView,
     GeocoderParoisseView,
     IntentionMesseViewSet,
     ObtenirJetonView,
@@ -25,5 +26,6 @@ urlpatterns = [
     path("jeton/", ObtenirJetonView.as_view(), name="jeton_obtenir"),
     path("jeton/rafraichir/", TokenRefreshView.as_view(), name="jeton_rafraichir"),
     path("paroisse/geocoder/", GeocoderParoisseView.as_view(), name="paroisse_geocoder"),
+    path("geocoder-inverse/", GeocoderInverseView.as_view(), name="geocoder_inverse"),
     path("", include(router.urls)),
 ]

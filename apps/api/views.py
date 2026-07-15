@@ -2,7 +2,7 @@ import requests
 from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -27,6 +27,7 @@ from .serializers import (
 
 class ObtenirJetonView(TokenObtainPairView):
     serializer_class = ParoisseSuspendueTokenObtainPairSerializer
+
 
 ROLES_PASTORALE_LECTURE = ("Secrétaire", "Lecteur")
 ROLES_PASTORALE_ECRITURE = ("Secrétaire",)
@@ -150,3 +151,57 @@ class GeocoderParoisseView(APIView):
         paroisse.save(update_fields=["latitude", "longitude"])
 
         return Response({"latitude": paroisse.latitude, "longitude": paroisse.longitude})
+
+
+class GeocoderInverseView(APIView):
+    """Géocodage inverse (coordonnées -> adresse), public : utilisé sur la
+    page de souscription, avant la création de tout compte, pour que
+    pointer sur la carte remplisse le champ adresse automatiquement plutôt
+    que de multiplier les champs de saisie."""
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        lat = request.query_params.get("lat")
+        lon = request.query_params.get("lon")
+        if not lat or not lon:
+            return Response({"detail": "Paramètres lat et lon requis."}, status=400)
+
+        try:
+            reponse = requests.get(
+                f"{settings.NOMINATIM_BASE_URL}/reverse",
+                params={"lat": lat, "lon": lon, "format": "json"},
+                headers={"User-Agent": settings.NOMINATIM_USER_AGENT},
+                timeout=5,
+            )
+            reponse.raise_for_status()
+            resultat = reponse.json()
+        except requests.RequestException as erreur:
+            return Response(
+                {"detail": f"Service de géocodage indisponible ({erreur})."}, status=503
+            )
+
+        if "error" in resultat:
+            return Response({"detail": "Aucune adresse trouvée à cet endroit."}, status=404)
+
+        composants = resultat.get("address", {})
+        rue = " ".join(
+            partie
+            for partie in [composants.get("house_number"), composants.get("road")]
+            if partie
+        )
+        ville = (
+            composants.get("city")
+            or composants.get("town")
+            or composants.get("village")
+            or composants.get("municipality")
+            or ""
+        )
+
+        return Response(
+            {
+                "adresse": rue or resultat.get("display_name", ""),
+                "ville": ville,
+                "affichage": resultat.get("display_name", ""),
+            }
+        )

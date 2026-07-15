@@ -77,3 +77,50 @@ def test_geocodage_reserve_au_cure(paroisse):
     reponse = client.post(reverse("api:paroisse_geocoder"))
 
     assert reponse.status_code == 403
+
+
+@patch("apps.api.views.requests.get")
+def test_geocodage_inverse_est_public_et_renvoie_l_adresse(requests_get):
+    requests_get.return_value = Mock(
+        status_code=200,
+        json=lambda: {
+            "address": {
+                "house_number": "44/A",
+                "road": "Boulevard du 30 Juin",
+                "city": "Golf",
+            },
+            "display_name": "44/A, Boulevard du 30 Juin, Golf, Kinshasa, RDC",
+        },
+        raise_for_status=lambda: None,
+    )
+    client = APIClient()
+
+    reponse = client.get(
+        reverse("api:geocoder_inverse"), {"lat": "-4.305737", "lon": "15.302001"}
+    )
+
+    assert reponse.status_code == 200
+    assert reponse.data["adresse"] == "44/A Boulevard du 30 Juin"
+    assert reponse.data["ville"] == "Golf"
+
+
+@patch("apps.api.views.requests.get")
+def test_geocodage_inverse_adresse_introuvable(requests_get):
+    requests_get.return_value = Mock(
+        status_code=200, json=lambda: {"error": "Unable to geocode"}, raise_for_status=lambda: None
+    )
+    client = APIClient()
+
+    reponse = client.get(
+        reverse("api:geocoder_inverse"), {"lat": "0", "lon": "0"}
+    )
+
+    assert reponse.status_code == 404
+
+
+def test_geocodage_inverse_exige_lat_et_lon():
+    client = APIClient()
+
+    reponse = client.get(reverse("api:geocoder_inverse"))
+
+    assert reponse.status_code == 400

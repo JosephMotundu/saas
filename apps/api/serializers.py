@@ -1,9 +1,28 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.celebrations.models import Celebration, IntentionMesse
 from apps.communication.models import Annonce
 from apps.finances.models import Don, RecuFiscal
 from apps.paroissiens.models import Famille, Paroissien
+
+
+class ParoisseSuspendueTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Empêche l'émission d'un jeton JWT pour un compte dont la paroisse a
+    été suspendue par la plateforme — même contrôle que ConnexionForm côté
+    web (apps.comptes.forms)."""
+
+    def validate(self, attrs):
+        donnees = super().validate(attrs)
+        paroisse = self.user.paroisse
+        if paroisse is not None and not paroisse.est_active:
+            raise AuthenticationFailed(
+                "Votre paroisse a été suspendue. Contactez l'administrateur de "
+                "la plateforme.",
+                code="paroisse_suspendue",
+            )
+        return donnees
 
 
 class ParoissienSerializer(serializers.ModelSerializer):

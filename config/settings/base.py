@@ -51,6 +51,7 @@ LOCAL_APPS = [
     "apps.finances",
     "apps.communication",
     "apps.api",
+    "apps.plateforme",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -61,9 +62,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "apps.comptes.middleware.ParoisseCouranteMiddleware",
     "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "apps.comptes.middleware.ParoisseCouranteMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 

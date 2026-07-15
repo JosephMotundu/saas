@@ -214,6 +214,13 @@ a:hover {
   flex-wrap: wrap;
 }
 
+.hero__image {
+  max-width: 100%;
+  border-radius: var(--rayon-grand);
+  box-shadow: var(--ombre-moyenne);
+  margin-bottom: 2rem;
+}
+
 .bouton-secondaire {
   display: inline-block;
   border: 1px solid var(--brand);

@@ -1,4 +1,5 @@
 {% extends "base_public.html" %}
+{% load static %}
 
 {% block title %}ParoisseConnect — le registre paroissial numérique{% endblock %}
 
@@ -6,12 +7,11 @@
 <section class="hero">
   <div class="container">
     <p class="suscription">Temps ordinaire</p>
-    <h1>Le registre de votre paroisse, tenu avec la même rigueur qu'un missel relié</h1>
-    <p class="hero__accroche">
-      ParoisseConnect rassemble paroissiens, sacrements, célébrations et dons
-      dans un seul registre numérique, pensé pour un secrétariat paroissial —
-      pas pour un tableau de bord marketing.
-    </p>
+    <h1>{{ contenu.titre_hero }}</h1>
+    <p class="hero__accroche">{{ contenu.accroche_hero }}</p>
+    {% if contenu.image_hero %}
+    <p><img src="{{ contenu.image_hero.url }}" alt="" class="hero__image"></p>
+    {% endif %}
     <div class="hero__actions">
       <a class="bouton-principal" href="{% url 'core:tarifs' %}">Voir les tarifs</a>
       <a class="bouton-secondaire" href="{% url 'core:fonctionnalites' %}">Découvrir les fonctionnalités</a>
@@ -52,9 +52,9 @@
 
 <section class="section">
   <div class="container text-center">
-    <h2>Prêt pour votre paroisse ?</h2>
+    <h2>{{ contenu.titre_cta }}</h2>
     <p class="hero__accroche" style="margin-left:auto;margin-right:auto;">
-      Créez votre espace ParoisseConnect en quelques minutes, sans engagement.
+      {{ contenu.texte_cta }}
     </p>
     <a class="bouton-principal" href="{% url 'core:souscription' %}">Créer ma paroisse</a>
   </div>

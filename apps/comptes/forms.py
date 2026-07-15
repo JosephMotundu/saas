@@ -31,6 +31,15 @@ class ConnexionForm(AuthenticationForm):
         "inactive": "Ce compte a été désactivé.",
     }
 
+    def confirm_login_allowed(self, user):
+        super().confirm_login_allowed(user)
+        if user.paroisse is not None and not user.paroisse.est_active:
+            raise forms.ValidationError(
+                "Votre paroisse a été suspendue. Contactez l'administrateur de "
+                "la plateforme.",
+                code="paroisse_suspendue",
+            )
+
 
 class ProfilForm(forms.ModelForm):
     class Meta:

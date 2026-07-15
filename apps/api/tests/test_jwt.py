@@ -62,3 +62,31 @@ def test_le_jeton_permet_d_accéder_a_un_endpoint_protege(secretaire):
 
     assert reponse_sans_jeton.status_code == 401
     assert reponse_avec_jeton.status_code == 200
+
+
+def test_jeton_refuse_si_la_paroisse_est_suspendue(paroisse, secretaire):
+    paroisse.est_active = False
+    paroisse.save()
+    client = APIClient()
+
+    reponse = client.post(
+        reverse("api:jeton_obtenir"),
+        {"username": "secretaire1", "password": "mot-de-passe-test-123"},
+    )
+
+    assert reponse.status_code == 401
+
+
+def test_jeton_deja_emis_refuse_apres_suspension(paroisse, secretaire):
+    client = APIClient()
+    jeton = client.post(
+        reverse("api:jeton_obtenir"),
+        {"username": "secretaire1", "password": "mot-de-passe-test-123"},
+    ).data["access"]
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {jeton}")
+
+    paroisse.est_active = False
+    paroisse.save()
+    reponse = client.get(reverse("api:paroissien-list"))
+
+    assert reponse.status_code == 403

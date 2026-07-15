@@ -19,6 +19,15 @@ class Paroisse(models.Model):
     telephone = models.CharField("téléphone", max_length=30, blank=True)
     email = models.EmailField("email", blank=True)
     date_creation = models.DateTimeField("date de création", auto_now_add=True)
+    est_active = models.BooleanField(
+        "active",
+        default=True,
+        help_text=(
+            "Décoché : la paroisse est suspendue par la plateforme (distinct de "
+            "l'abonnement, que le Curé gère lui-même). Personne ne peut plus s'y "
+            "connecter tant qu'elle n'est pas réactivée."
+        ),
+    )
 
     class Meta:
         verbose_name = "paroisse"

@@ -5,6 +5,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.celebrations.models import Celebration, IntentionMesse
 from apps.communication.models import Annonce
@@ -19,8 +20,13 @@ from .serializers import (
     CelebrationSerializer,
     DonSerializer,
     IntentionMesseSerializer,
+    ParoisseSuspendueTokenObtainPairSerializer,
     ParoissienSerializer,
 )
+
+
+class ObtenirJetonView(TokenObtainPairView):
+    serializer_class = ParoisseSuspendueTokenObtainPairSerializer
 
 ROLES_PASTORALE_LECTURE = ("Secrétaire", "Lecteur")
 ROLES_PASTORALE_ECRITURE = ("Secrétaire",)

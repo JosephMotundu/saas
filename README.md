@@ -160,6 +160,27 @@ Le projet est construit par étapes (voir brief).
     pour géocoder l'adresse de la paroisse ; bouton « Localiser
     automatiquement » sur le tableau de bord, qui recharge ensuite la
     carte Leaflet avec les coordonnées obtenues.
+- ✅ Console de supervision plateforme (hors plan initial) — `apps/plateforme`,
+  espace `/plateforme/` réservé au superadmin d'instance (`is_superuser`) :
+  - Liste de toutes les paroisses inscrites avec leurs statistiques
+    (utilisateurs, paroissiens) et leur statut.
+  - Fiche paroisse : suspendre/réactiver l'accès, statistiques détaillées
+    (paroissiens, actes sacramentels, dons), liste de tous les comptes de
+    la paroisse avec réinitialisation de mot de passe individuelle (pas
+    d'hypothèse d'un Curé unique — plusieurs comptes peuvent porter ce rôle).
+  - `Paroisse.est_active` est **distinct** de `Abonnement.statut` : la
+    suspension est une décision de la plateforme, l'annulation d'abonnement
+    une décision du Curé — les confondre aurait permis à une paroisse
+    suspendue de se « réactiver » elle-même.
+  - La suspension bloque la connexion (`ConnexionForm.confirm_login_allowed`),
+    coupe immédiatement une session déjà ouverte (`ParoisseCouranteMiddleware`),
+    et empêche l'émission ou l'usage d'un jeton JWT.
+  - Édition du contenu « hero » de la page d'accueil publique
+    (`ContenuVitrine`, app `core`) — titre, accroche, image, appel à
+    l'action ; scope volontairement limité à cette section, pas un CMS
+    complet.
+  - Un superadmin qui se connecte est redirigé vers `/plateforme/` plutôt
+    que vers un tableau de bord vide (il n'appartient à aucune paroisse).
 - ⏳ Étape 10 — 2FA TOTP
 
 ## Rôles et accès aux modules

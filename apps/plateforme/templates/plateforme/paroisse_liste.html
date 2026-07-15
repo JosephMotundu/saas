@@ -1,0 +1,46 @@
+{% extends "base_plateforme.html" %}
+
+{% block title %}Paroisses — Plateforme ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Paroisses inscrites</h1>
+</div>
+
+{% if paroisses %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Nom</th>
+      <th scope="col">Diocèse</th>
+      <th scope="col">Offre</th>
+      <th scope="col">Statut</th>
+      <th scope="col">Utilisateurs</th>
+      <th scope="col">Paroissiens</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for paroisse in paroisses %}
+    <tr>
+      <td><a href="{% url 'plateforme:paroisse_detail' paroisse.pk %}">{{ paroisse.nom }}</a></td>
+      <td>{{ paroisse.diocese }}</td>
+      <td>{{ paroisse.abonnement.get_offre_display|default:"—" }}</td>
+      <td>
+        {% if not paroisse.est_active %}
+          <span class="etiquette">Suspendue</span>
+        {% elif paroisse.abonnement.statut == "annule" %}
+          <span class="etiquette">Abonnement annulé</span>
+        {% else %}
+          <span class="etiquette">Active</span>
+        {% endif %}
+      </td>
+      <td class="numerique">{{ paroisse.nombre_utilisateurs }}</td>
+      <td class="numerique">{{ paroisse.nombre_paroissiens }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="etat-vide">Aucune paroisse inscrite pour l'instant.</p>
+{% endif %}
+{% endblock %}

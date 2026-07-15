@@ -12,10 +12,16 @@ from apps.paroissiens.models import Paroissien
 from apps.sacrements.models import Bapteme, Communion, Confirmation, Funerailles, Mariage
 
 from .forms import OFFRES, InscriptionForm
+from .models import ContenuVitrine
 
 
 class AccueilView(TemplateView):
     template_name = "core/accueil.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["contenu"] = ContenuVitrine.charger()
+        return context
 
 
 class FonctionnalitesView(TemplateView):
@@ -69,6 +75,11 @@ class InscriptionView(FormView):
 
 class TableauDeBordView(LoginRequiredMixin, TemplateView):
     template_name = "core/tableau_de_bord.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_superuser and request.user.paroisse is None:
+            return redirect("plateforme:paroisse_liste")
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -11,6 +11,8 @@ def creer_permission_role(roles_lecture=(), roles_ecriture=()):
             utilisateur = request.user
             if not utilisateur or not utilisateur.is_authenticated:
                 return False
+            if utilisateur.paroisse is not None and not utilisateur.paroisse.est_active:
+                return False
             if utilisateur.is_superuser:
                 return True
             groupes = set(utilisateur.groups.values_list("name", flat=True))

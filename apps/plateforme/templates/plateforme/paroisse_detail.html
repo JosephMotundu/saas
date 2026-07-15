@@ -1,0 +1,93 @@
+{% extends "base_plateforme.html" %}
+
+{% block title %}{{ paroisse.nom }} — Plateforme ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>{{ paroisse.nom }}</h1>
+  <form method="post" action="{% url 'plateforme:paroisse_basculer_active' paroisse.pk %}">
+    {% csrf_token %}
+    {% if paroisse.est_active %}
+      <button type="submit" class="bouton-danger">Suspendre cette paroisse</button>
+    {% else %}
+      <button type="submit" class="bouton-principal">Réactiver cette paroisse</button>
+    {% endif %}
+  </form>
+</div>
+
+<div class="fiche">
+  <dl>
+    <dt>Diocèse</dt>
+    <dd>{{ paroisse.diocese }}</dd>
+    <dt>Adresse</dt>
+    <dd>{{ paroisse.adresse }}, {{ paroisse.ville }}</dd>
+    <dt>Statut</dt>
+    <dd>
+      {% if paroisse.est_active %}<span class="etiquette">Active</span>
+      {% else %}<span class="etiquette">Suspendue</span>{% endif %}
+    </dd>
+    <dt>Abonnement</dt>
+    <dd>
+      {% if paroisse.abonnement %}
+        {{ paroisse.abonnement.get_offre_display }} — {{ paroisse.abonnement.get_statut_display }}
+      {% else %}Aucun{% endif %}
+    </dd>
+    <dt>Créée le</dt>
+    <dd class="numerique">{{ paroisse.date_creation|date:"d/m/Y" }}</dd>
+  </dl>
+</div>
+
+<div class="compteurs">
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ nombre_paroissiens }}</span>
+    <span class="compteur__libelle">Paroissiens</span>
+  </div>
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ nombre_actes_sacrements }}</span>
+    <span class="compteur__libelle">Actes sacramentels</span>
+  </div>
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ nombre_dons }}</span>
+    <span class="compteur__libelle">Dons enregistrés</span>
+  </div>
+</div>
+
+<h2>Comptes de cette paroisse</h2>
+{% if membres %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Nom d'utilisateur</th>
+      <th scope="col">Nom complet</th>
+      <th scope="col">Rôle</th>
+      <th scope="col">Statut</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for membre in membres %}
+    <tr>
+      <td>{{ membre.username }}</td>
+      <td>{{ membre.get_full_name|default:"—" }}</td>
+      <td>
+        {% for groupe in membre.groups.all %}<span class="etiquette">{{ groupe.name }}</span>{% endfor %}
+      </td>
+      <td>{% if membre.is_active %}Actif{% else %}Désactivé{% endif %}</td>
+      <td>
+        <form method="post" action="{% url 'plateforme:membre_reinitialiser_mot_de_passe' membre.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="bouton-secondaire">Réinitialiser le mot de passe</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="etat-vide">Aucun compte pour cette paroisse.</p>
+{% endif %}
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'plateforme:paroisse_liste' %}">Retour à la liste</a>
+</div>
+{% endblock %}

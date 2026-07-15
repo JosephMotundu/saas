@@ -1,0 +1,28 @@
+{% extends "base_plateforme.html" %}
+
+{% block title %}Mot de passe réinitialisé — Plateforme ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Mot de passe réinitialisé pour {{ membre.get_full_name|default:membre.username }}</h1>
+
+<div class="fiche">
+  <p class="avis-demo">
+    Communiquez ces identifiants à {{ membre.get_full_name|default:membre.username }} — ce mot
+    de passe temporaire ne sera plus affiché ensuite.
+  </p>
+  <dl>
+    <dt>Paroisse</dt>
+    <dd>{{ membre.paroisse.nom }}</dd>
+    <dt>Nom d'utilisateur</dt>
+    <dd class="numerique">{{ membre.username }}</dd>
+    <dt>Mot de passe temporaire</dt>
+    <dd class="numerique">{{ mot_de_passe_temporaire }}</dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-principal" href="{% url 'plateforme:paroisse_detail' membre.paroisse.pk %}">
+    Retour à la paroisse
+  </a>
+</div>
+{% endblock %}

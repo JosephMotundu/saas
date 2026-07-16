@@ -135,6 +135,24 @@ def test_page_publique_isolee_par_paroisse(client, paroisse, secretaire):
     assert "Annonce de Saint Pierre" not in reponse.content.decode()
 
 
+def test_pied_de_page_affiche_le_nom_de_la_paroisse_sur_la_page_publique(
+    client, paroisse, secretaire
+):
+    reponse = client.get(
+        reverse("communication_publique:annonce_liste", kwargs={"slug": paroisse.slug})
+    )
+
+    assert "Saint Raphaël" in reponse.content.decode()
+
+
+def test_pied_de_page_ne_montre_aucune_paroisse_pour_un_visiteur_anonyme(client):
+    reponse = client.get(reverse("core:accueil"))
+    contenu = reponse.content.decode()
+
+    assert "ParoisseConnect" in contenu
+    assert "Saint Raphaël" not in contenu
+
+
 def test_secretaire_peut_marquer_une_annonce_publique(client, paroisse, secretaire):
     client.force_login(secretaire)
 

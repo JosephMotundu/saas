@@ -31,7 +31,12 @@
 
 <footer class="pied-de-page">
   <div class="container">
-    <p>&copy; {% now "Y" %} ParoisseConnect &mdash; Paroisse Saint Raphaël.</p>
+    <p>
+      &copy; {% now "Y" %} ParoisseConnect
+      {% if paroisse %}&mdash; {{ paroisse.nom }}
+      {% elif request.paroisse %}&mdash; {{ request.paroisse.nom }}
+      {% endif %}.
+    </p>
   </div>
 </footer>
 

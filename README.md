@@ -132,11 +132,26 @@ Le projet est construit par étapes (voir brief).
   - **Équipe** (`comptes:equipe`) : le Curé invite un collaborateur
     (Secrétaire/Trésorier/Lecteur/Curé) — mot de passe temporaire généré
     côté serveur, jamais choisi par l'inviteur, affiché une seule fois ; le
-    Curé peut aussi désactiver/réactiver un membre (jamais lui-même).
+    Curé peut aussi désactiver/réactiver un membre (jamais lui-même). Le
+    Curé peut également **modifier un membre** (coordonnées + rôle,
+    `comptes:equipe_modifier`) et **réinitialiser son mot de passe**
+    (`comptes:equipe_reinitialiser_mot_de_passe`, nouveau mot de passe
+    temporaire affiché une seule fois, même principe que l'invitation).
+    Ces deux actions, comme la désactivation, sont bloquées sur son propre
+    compte (redirection vers « Mon compte ») et scopées à sa paroisse
+    (`get_object_or_404(..., paroisse=request.paroisse)` → 404 sur un
+    membre d'une autre paroisse).
   - **Abonnement** (`comptes:abonnement`) : changer d'offre ou annuler/
     réactiver l'abonnement de la paroisse. Modèle `Abonnement`
     (`apps/comptes/models.py`), bien distinct des `Don`/`RecuFiscal` de
     l'app finances qui sont la comptabilité *interne* de la paroisse.
+  - **Pied de page dynamique** (`templates/base_public.html`) : plus de
+    nom de paroisse figé en dur. Priorité au contexte `paroisse` explicite
+    de la vue (pages publiques par paroisse — annonces, `paroisse` posé
+    dans `get_context_data`), puis à `request.paroisse` (posé par
+    `ParoisseCouranteMiddleware` pour un utilisateur connecté), sinon
+    seulement « ParoisseConnect. » — un visiteur anonyme ou le superadmin
+    (`/plateforme/`, sans paroisse) ne voient jamais de nom de paroisse.
 - ✅ Commande `manage.py seed` (`apps/comptes/management/commands/seed.py`) —
   idempotente : paroisse Saint Raphaël, abonnement, un compte par rôle,
   jeu de données de démonstration (famille, paroissien, baptême,

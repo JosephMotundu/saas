@@ -814,6 +814,18 @@ a:hover {
   flex-wrap: wrap;
 }
 
+.actions-ligne {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.actions-ligne form {
+  display: inline-flex;
+  margin: 0;
+}
+
 .bouton-danger {
   display: inline-block;
   border: 1px solid var(--liturgique-rouge);

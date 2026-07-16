@@ -80,5 +80,22 @@ class InvitationForm(forms.Form):
         return role
 
 
+class MembreModifierForm(forms.Form):
+    """Le Curé modifie un membre de son équipe : coordonnées et rôle. Le
+    nom d'utilisateur n'est volontairement pas modifiable ici (identifiant
+    stable) ; le mot de passe se réinitialise via une action séparée."""
+
+    prenom = forms.CharField(label="Prénom")
+    nom = forms.CharField(label="Nom")
+    email = forms.EmailField(label="Email")
+    role = forms.ChoiceField(label="Rôle", choices=ROLES_INVITABLES)
+
+    def clean_role(self):
+        role = self.cleaned_data["role"]
+        if not Group.objects.filter(name=role).exists():
+            raise forms.ValidationError("Rôle inconnu.")
+        return role
+
+
 class ChangerOffreForm(forms.Form):
     offre = forms.ChoiceField(label="Offre", choices=Abonnement.OFFRE_CHOICES)

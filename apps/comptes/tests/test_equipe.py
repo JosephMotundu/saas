@@ -128,3 +128,125 @@ def test_cure_ne_peut_pas_se_desactiver_lui_meme(client, paroisse):
 
     cure.refresh_from_db()
     assert cure.is_active is True
+
+
+def test_cure_peut_modifier_un_membre_et_son_role(client, paroisse):
+    cure = creer_cure(paroisse)
+    membre = Utilisateur.objects.create_user(
+        username="secretaire1",
+        password="mot-de-passe-test-123",
+        paroisse=paroisse,
+        first_name="Ancien",
+        last_name="Nom",
+        email="ancien@example.com",
+    )
+    membre.groups.add(Group.objects.get(name="Secrétaire"))
+    client.force_login(cure)
+
+    reponse = client.post(
+        reverse("comptes:equipe_modifier", args=[membre.pk]),
+        {
+            "prenom": "Nouveau",
+            "nom": "Nom",
+            "email": "nouveau@example.com",
+            "role": "Trésorier",
+        },
+    )
+
+    assert reponse.status_code == 302
+    membre.refresh_from_db()
+    assert membre.first_name == "Nouveau"
+    assert membre.email == "nouveau@example.com"
+    assert list(membre.groups.values_list("name", flat=True)) == ["Trésorier"]
+
+
+def test_cure_ne_peut_pas_se_modifier_lui_meme_via_equipe(client, paroisse):
+    cure = creer_cure(paroisse)
+    client.force_login(cure)
+
+    reponse = client.get(reverse("comptes:equipe_modifier", args=[cure.pk]))
+
+    assert reponse.status_code == 302
+    assert reponse.url == reverse("comptes:equipe")
+
+
+def test_secretaire_ne_peut_pas_modifier_un_membre(client, paroisse):
+    secretaire = Utilisateur.objects.create_user(
+        username="secretaire1", password="mot-de-passe-test-123", paroisse=paroisse
+    )
+    secretaire.groups.add(Group.objects.get(name="Secrétaire"))
+    autre = Utilisateur.objects.create_user(
+        username="lecteur1", password="mot-de-passe-test-123", paroisse=paroisse
+    )
+    client.force_login(secretaire)
+
+    reponse = client.get(reverse("comptes:equipe_modifier", args=[autre.pk]))
+
+    assert reponse.status_code == 403
+
+
+def test_cure_ne_peut_pas_modifier_un_membre_dune_autre_paroisse(
+    client, paroisse, autre_paroisse
+):
+    cure = creer_cure(paroisse)
+    membre_autre = Utilisateur.objects.create_user(
+        username="membre_autre", password="mot-de-passe-test-123", paroisse=autre_paroisse
+    )
+    client.force_login(cure)
+
+    reponse = client.get(reverse("comptes:equipe_modifier", args=[membre_autre.pk]))
+
+    assert reponse.status_code == 404
+
+
+def test_cure_peut_reinitialiser_le_mot_de_passe_dun_membre(client, paroisse):
+    cure = creer_cure(paroisse)
+    membre = Utilisateur.objects.create_user(
+        username="secretaire1", password="ancien-mot-de-passe", paroisse=paroisse
+    )
+    client.force_login(cure)
+
+    reponse = client.post(
+        reverse("comptes:equipe_reinitialiser_mot_de_passe", args=[membre.pk])
+    )
+    contenu = reponse.content.decode()
+
+    assert reponse.status_code == 200
+    assert "Mot de passe réinitialisé" in contenu
+
+    mot_de_passe = re.search(
+        r'<dd class="numerique">([^<]+)</dd>\s*</dl>', contenu
+    ).group(1)
+
+    client.logout()
+    connecte = client.login(username="secretaire1", password=mot_de_passe)
+    assert connecte is True
+
+
+def test_cure_ne_peut_pas_reinitialiser_son_propre_mot_de_passe_via_equipe(client, paroisse):
+    cure = creer_cure(paroisse)
+    client.force_login(cure)
+
+    reponse = client.post(
+        reverse("comptes:equipe_reinitialiser_mot_de_passe", args=[cure.pk])
+    )
+
+    assert reponse.status_code == 302
+    assert reponse.url == reverse("comptes:equipe")
+
+
+def test_secretaire_ne_peut_pas_reinitialiser_un_mot_de_passe(client, paroisse):
+    secretaire = Utilisateur.objects.create_user(
+        username="secretaire1", password="mot-de-passe-test-123", paroisse=paroisse
+    )
+    secretaire.groups.add(Group.objects.get(name="Secrétaire"))
+    autre = Utilisateur.objects.create_user(
+        username="lecteur1", password="mot-de-passe-test-123", paroisse=paroisse
+    )
+    client.force_login(secretaire)
+
+    reponse = client.post(
+        reverse("comptes:equipe_reinitialiser_mot_de_passe", args=[autre.pk])
+    )
+
+    assert reponse.status_code == 403

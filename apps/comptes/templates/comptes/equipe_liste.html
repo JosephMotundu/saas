@@ -31,17 +31,22 @@
       </td>
       <td>{% if membre.is_active %}Actif{% else %}Désactivé{% endif %}</td>
       {% if est_cure %}
-      <td>
-        <form method="post" action="{% url 'comptes:equipe_basculer_actif' membre.pk %}">
-          {% csrf_token %}
-          {% if membre == user %}
-            <span class="sous-titre">—</span>
-          {% else %}
+      <td class="actions-ligne">
+        {% if membre == user %}
+          <span class="sous-titre">—</span>
+        {% else %}
+          <a class="bouton-secondaire" href="{% url 'comptes:equipe_modifier' membre.pk %}">Modifier</a>
+          <form method="post" action="{% url 'comptes:equipe_reinitialiser_mot_de_passe' membre.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="bouton-secondaire">Réinitialiser le mot de passe</button>
+          </form>
+          <form method="post" action="{% url 'comptes:equipe_basculer_actif' membre.pk %}">
+            {% csrf_token %}
             <button type="submit" class="bouton-secondaire">
               {% if membre.is_active %}Désactiver{% else %}Réactiver{% endif %}
             </button>
-          {% endif %}
-        </form>
+          </form>
+        {% endif %}
       </td>
       {% endif %}
     </tr>

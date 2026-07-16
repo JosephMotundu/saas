@@ -8,7 +8,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, UpdateView, View
 
-from .forms import ChangerOffreForm, ConnexionForm, InvitationForm, ProfilForm
+from .forms import (
+    ChangerOffreForm,
+    ConnexionForm,
+    InvitationForm,
+    MembreModifierForm,
+    ProfilForm,
+)
 from .mixins import ExigeParoisseMixin, FiltrageParoisseMixin, RoleRequisMixin
 from .models import Abonnement, Utilisateur
 
@@ -117,6 +123,79 @@ class MembreBasculerActifView(RoleRequisMixin, ExigeParoisseMixin, View):
             etat = "réactivé" if membre.is_active else "désactivé"
             messages.success(request, f"Compte de {membre} {etat}.")
         return redirect("comptes:equipe")
+
+
+class MembreModifierView(RoleRequisMixin, ExigeParoisseMixin, View):
+    """Réservé au Curé : modifie les coordonnées et le rôle d'un membre de
+    son équipe. Le nom d'utilisateur reste stable ; on passe par « Mon
+    compte » pour se modifier soi-même, pas par ici."""
+
+    roles_autorises = ()
+    template_name = "comptes/equipe_modifier.html"
+
+    def get_membre(self, request, pk):
+        return get_object_or_404(Utilisateur, pk=pk, paroisse=request.paroisse)
+
+    def get(self, request, pk):
+        membre = self.get_membre(request, pk)
+        if membre == request.user:
+            messages.error(request, "Modifiez votre propre profil depuis « Mon compte ».")
+            return redirect("comptes:equipe")
+        role_actuel = membre.groups.values_list("name", flat=True).first()
+        form = MembreModifierForm(
+            initial={
+                "prenom": membre.first_name,
+                "nom": membre.last_name,
+                "email": membre.email,
+                "role": role_actuel,
+            }
+        )
+        return render(request, self.template_name, {"form": form, "membre": membre})
+
+    def post(self, request, pk):
+        membre = self.get_membre(request, pk)
+        if membre == request.user:
+            messages.error(request, "Modifiez votre propre profil depuis « Mon compte ».")
+            return redirect("comptes:equipe")
+
+        form = MembreModifierForm(request.POST)
+        if not form.is_valid():
+            return render(request, self.template_name, {"form": form, "membre": membre})
+
+        donnees = form.cleaned_data
+        membre.first_name = donnees["prenom"]
+        membre.last_name = donnees["nom"]
+        membre.email = donnees["email"]
+        membre.save(update_fields=["first_name", "last_name", "email"])
+        membre.groups.set([Group.objects.get(name=donnees["role"])])
+
+        messages.success(request, f"Compte de {membre} mis à jour.")
+        return redirect("comptes:equipe")
+
+
+class MembreReinitialiserMotDePasseView(RoleRequisMixin, ExigeParoisseMixin, View):
+    """Réservé au Curé : réinitialise le mot de passe d'un membre de sa
+    propre paroisse (pas besoin de solliciter le superadmin de la
+    plateforme pour ça — voir aussi apps.plateforme, réservé au
+    superadmin pour n'importe quelle paroisse)."""
+
+    roles_autorises = ()
+
+    def post(self, request, pk):
+        membre = get_object_or_404(Utilisateur, pk=pk, paroisse=request.paroisse)
+        if membre == request.user:
+            messages.error(request, "Changez votre propre mot de passe depuis « Mon compte ».")
+            return redirect("comptes:equipe")
+
+        mot_de_passe_temporaire = secrets.token_urlsafe(9)
+        membre.set_password(mot_de_passe_temporaire)
+        membre.save()
+
+        return render(
+            request,
+            "comptes/equipe_mot_de_passe_reinitialise.html",
+            {"membre": membre, "mot_de_passe_temporaire": mot_de_passe_temporaire},
+        )
 
 
 class AbonnementView(RoleRequisMixin, ExigeParoisseMixin, TemplateView):

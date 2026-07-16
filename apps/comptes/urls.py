@@ -8,6 +8,8 @@ from .views import (
     EquipeListView,
     InvitationCreateView,
     MembreBasculerActifView,
+    MembreModifierView,
+    MembreReinitialiserMotDePasseView,
     ProfilModifierView,
     ProfilView,
 )
@@ -42,6 +44,12 @@ urlpatterns = [
         "equipe/<int:pk>/basculer-actif/",
         MembreBasculerActifView.as_view(),
         name="equipe_basculer_actif",
+    ),
+    path("equipe/<int:pk>/modifier/", MembreModifierView.as_view(), name="equipe_modifier"),
+    path(
+        "equipe/<int:pk>/reinitialiser-mot-de-passe/",
+        MembreReinitialiserMotDePasseView.as_view(),
+        name="equipe_reinitialiser_mot_de_passe",
     ),
     path("abonnement/", AbonnementView.as_view(), name="abonnement"),
     path(

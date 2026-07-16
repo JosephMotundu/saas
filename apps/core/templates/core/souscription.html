@@ -49,6 +49,12 @@
 
     {{ form.latitude }}
     {{ form.longitude }}
+    {% if form.latitude.errors or form.longitude.errors %}
+      <p class="message-erreur" role="alert">
+        {{ form.latitude.errors|join:" " }} {{ form.longitude.errors|join:" " }}
+        Recommencez la recherche sur la carte.
+      </p>
+    {% endif %}
     {% include "partials/_form_field.html" with champ=form.offre %}
 
     <h2>Votre compte administrateur</h2>
@@ -97,6 +103,15 @@
   }
 
   async function placerMarqueur(lat, lon) {
+    // Nominatim (et les coordonnées d'un clic sur la carte) renvoient bien
+    // plus de décimales que les 6 chiffres après la virgule acceptés par
+    // Paroisse.latitude/longitude (DecimalField max_digits=9,
+    // decimal_places=6) : sans cet arrondi, la validation du formulaire
+    // échoue silencieusement (champs cachés, aucune erreur visible) et rien
+    // n'est enregistré.
+    lat = Number(Number(lat).toFixed(6));
+    lon = Number(Number(lon).toFixed(6));
+
     if (marqueur) {
       carte.removeLayer(marqueur);
     }

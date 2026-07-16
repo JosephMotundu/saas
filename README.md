@@ -188,6 +188,17 @@ Le projet est construit par étapes (voir brief).
     les champs déjà saisis (avenue, quartier, commune, ville) en une seule
     requête Nominatim, pour aider à se repérer sur la carte sans deviner —
     utile quand plusieurs communes partagent le nom d'une avenue.
+  - Nominatim renvoie des coordonnées avec bien plus de décimales que les 6
+    chiffres après la virgule acceptés par `Paroisse.latitude`/`longitude`
+    (`DecimalField(max_digits=9, decimal_places=6)`). Corrigé : la carte de
+    souscription arrondit désormais `lat`/`lon` à 6 décimales dès qu'un
+    marqueur est posé (clic sur la carte ou sur un résultat de recherche) ;
+    `GeocoderParoisseView` (tableau de bord) fait de même avant
+    l'enregistrement. Sans cet arrondi, la validation du formulaire échouait
+    silencieusement (champs cachés, aucune erreur visible) et, côté API,
+    l'enregistrement aurait levé une erreur PostgreSQL en production
+    (« numeric field overflow »). Une erreur explicite s'affiche désormais
+    si la validation échoue malgré tout.
 - ✅ Console de supervision plateforme (hors plan initial) — `apps/plateforme`,
   espace `/plateforme/` réservé au superadmin d'instance (`is_superuser`) :
   - Liste de toutes les paroisses inscrites avec leurs statistiques

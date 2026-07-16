@@ -56,6 +56,26 @@ def test_geocodage_enregistre_les_coordonnees(requests_get, paroisse, cure):
 
 
 @patch("apps.api.views.requests.get")
+def test_geocodage_arrondit_la_precision_excessive_de_nominatim(requests_get, paroisse, cure):
+    """Nominatim renvoie couramment bien plus de 6 décimales — sans arrondi,
+    l'enregistrement échouerait (Paroisse.latitude a decimal_places=6,
+    max_digits=9 ; en production PostgreSQL lève "numeric field overflow")."""
+    requests_get.return_value = Mock(
+        status_code=200,
+        json=lambda: [{"lat": "-4.30573729384756", "lon": "15.30200123456789"}],
+        raise_for_status=lambda: None,
+    )
+    client = _client_pour(cure)
+
+    reponse = client.post(reverse("api:paroisse_geocoder"))
+
+    assert reponse.status_code == 200
+    paroisse.refresh_from_db()
+    assert str(paroisse.latitude) == "-4.305737"
+    assert str(paroisse.longitude) == "15.302001"
+
+
+@patch("apps.api.views.requests.get")
 def test_geocodage_adresse_introuvable(requests_get, paroisse, cure):
     requests_get.return_value = Mock(
         status_code=200, json=lambda: [], raise_for_status=lambda: None

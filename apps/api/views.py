@@ -146,8 +146,12 @@ class GeocoderParoisseView(APIView):
                 {"detail": "Adresse introuvable auprès du service de géocodage."}, status=404
             )
 
-        paroisse.latitude = resultats[0]["lat"]
-        paroisse.longitude = resultats[0]["lon"]
+        # Nominatim renvoie bien plus de décimales que les 6 chiffres après
+        # la virgule acceptés par Paroisse.latitude/longitude (max_digits=9,
+        # decimal_places=6) : sans cet arrondi, l'enregistrement échoue en
+        # production (PostgreSQL, "numeric field overflow").
+        paroisse.latitude = round(float(resultats[0]["lat"]), 6)
+        paroisse.longitude = round(float(resultats[0]["lon"]), 6)
         paroisse.save(update_fields=["latitude", "longitude"])
 
         return Response({"latitude": paroisse.latitude, "longitude": paroisse.longitude})

@@ -12,8 +12,9 @@ from apps.finances.models import Don
 from apps.paroissiens.models import Paroissien
 from apps.sacrements.models import Bapteme, Communion, Confirmation, Funerailles, Mariage
 
-from .forms import ContenuVitrineForm
+from .forms import ContenuVitrineForm, ParoisseSupprimerForm
 from .mixins import SuperuserRequisMixin
+from .services import supprimer_paroisse
 
 
 class ParoisseListView(SuperuserRequisMixin, ListView):
@@ -65,6 +66,50 @@ class ParoisseBasculerActiveView(SuperuserRequisMixin, View):
         etat = "réactivée" if paroisse.est_active else "suspendue"
         messages.success(request, f"Paroisse {paroisse.nom} {etat}.")
         return redirect("plateforme:paroisse_detail", pk=paroisse.pk)
+
+
+class ParoisseSupprimerView(SuperuserRequisMixin, View):
+    """Réservé au superadmin : suppression définitive d'une paroisse et de
+    toutes ses données, contrairement à la suspension (réversible, voir
+    ParoisseBasculerActiveView). Confirmation obligatoire en retapant le nom
+    de la paroisse."""
+
+    template_name = "plateforme/paroisse_supprimer.html"
+
+    def get_paroisse(self, pk):
+        return get_object_or_404(
+            Paroisse.objects.select_related("abonnement"), pk=pk
+        )
+
+    def get_context_data(self, paroisse, form=None):
+        return {
+            "paroisse": paroisse,
+            "form": form or ParoisseSupprimerForm(paroisse=paroisse),
+            "nombre_utilisateurs": Utilisateur.objects.filter(paroisse=paroisse).count(),
+            "nombre_paroissiens": Paroissien.objects.filter(paroisse=paroisse).count(),
+            "nombre_actes_sacrements": sum(
+                modele.objects.filter(paroisse=paroisse).count()
+                for modele in (Bapteme, Communion, Confirmation, Funerailles, Mariage)
+            ),
+            "nombre_dons": Don.objects.filter(paroisse=paroisse).count(),
+        }
+
+    def get(self, request, pk):
+        paroisse = self.get_paroisse(pk)
+        return render(request, self.template_name, self.get_context_data(paroisse))
+
+    def post(self, request, pk):
+        paroisse = self.get_paroisse(pk)
+        form = ParoisseSupprimerForm(request.POST, paroisse=paroisse)
+        if not form.is_valid():
+            return render(
+                request, self.template_name, self.get_context_data(paroisse, form=form)
+            )
+
+        nom = paroisse.nom
+        supprimer_paroisse(paroisse)
+        messages.success(request, f"Paroisse {nom} et toutes ses données ont été supprimées.")
+        return redirect("plateforme:paroisse_liste")
 
 
 class MembreReinitialiserMotDePasseView(SuperuserRequisMixin, View):

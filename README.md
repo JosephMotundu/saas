@@ -196,6 +196,19 @@ Le projet est construit par étapes (voir brief).
     (paroissiens, actes sacramentels, dons), liste de tous les comptes de
     la paroisse avec réinitialisation de mot de passe individuelle (pas
     d'hypothèse d'un Curé unique — plusieurs comptes peuvent porter ce rôle).
+  - **Suppression définitive d'une paroisse** (`plateforme:paroisse_supprimer`,
+    `apps/plateforme/services.py::supprimer_paroisse`) : distincte de la
+    suspension (réversible) — celle-ci efface la paroisse et toutes ses
+    données. Chaque FK vers `Paroisse` est `on_delete=PROTECT` (§1, contre
+    les pertes accidentelles), donc un `paroisse.delete()` direct lèverait
+    `ProtectedError` ; le service supprime explicitement chaque registre
+    dans l'ordre qui respecte aussi les contraintes PROTECT internes (reçu
+    fiscal avant son don, intention de messe avant sa célébration, actes
+    sacramentels et dons avant les paroissiens qu'ils référencent, annonces
+    avant les comptes auteurs), le tout dans une seule
+    `transaction.atomic()`. Confirmation obligatoire en retapant le nom
+    exact de la paroisse (`ParoisseSupprimerForm`) — dernier garde-fou avant
+    une action irréversible.
   - `Paroisse.est_active` est **distinct** de `Abonnement.statut` : la
     suspension est une décision de la plateforme, l'annulation d'abonnement
     une décision du Curé — les confondre aurait permis à une paroisse

@@ -13,6 +13,11 @@ urlpatterns = [
         name="paroisse_basculer_active",
     ),
     path(
+        "paroisses/<int:pk>/supprimer/",
+        views.ParoisseSupprimerView.as_view(),
+        name="paroisse_supprimer",
+    ),
+    path(
         "membres/<int:pk>/reinitialiser-mot-de-passe/",
         views.MembreReinitialiserMotDePasseView.as_view(),
         name="membre_reinitialiser_mot_de_passe",

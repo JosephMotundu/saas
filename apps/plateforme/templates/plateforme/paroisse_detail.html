@@ -5,14 +5,17 @@
 {% block content %}
 <div class="barre-actions">
   <h1>{{ paroisse.nom }}</h1>
-  <form method="post" action="{% url 'plateforme:paroisse_basculer_active' paroisse.pk %}">
-    {% csrf_token %}
-    {% if paroisse.est_active %}
-      <button type="submit" class="bouton-danger">Suspendre cette paroisse</button>
-    {% else %}
-      <button type="submit" class="bouton-principal">Réactiver cette paroisse</button>
-    {% endif %}
-  </form>
+  <div class="actions-ligne">
+    <form method="post" action="{% url 'plateforme:paroisse_basculer_active' paroisse.pk %}">
+      {% csrf_token %}
+      {% if paroisse.est_active %}
+        <button type="submit" class="bouton-danger">Suspendre cette paroisse</button>
+      {% else %}
+        <button type="submit" class="bouton-principal">Réactiver cette paroisse</button>
+      {% endif %}
+    </form>
+    <a class="bouton-danger" href="{% url 'plateforme:paroisse_supprimer' paroisse.pk %}">Supprimer cette paroisse</a>
+  </div>
 </div>
 
 <div class="fiche">

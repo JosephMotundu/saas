@@ -1,0 +1,50 @@
+{% extends "base_plateforme.html" %}
+
+{% block title %}Supprimer {{ paroisse.nom }} — Plateforme ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Supprimer {{ paroisse.nom }}</h1>
+<p class="sous-titre">
+  Cette action est <strong>définitive et irréversible</strong> : elle
+  supprime la paroisse et toutes ses données. Pour suspendre l'accès sans
+  rien perdre, utilisez plutôt « Suspendre cette paroisse » depuis la fiche
+  de la paroisse.
+</p>
+
+<div class="fiche">
+  <p class="avis-demo">Seront supprimés définitivement :</p>
+  <div class="compteurs">
+    <div class="compteur">
+      <span class="compteur__valeur numerique">{{ nombre_utilisateurs }}</span>
+      <span class="compteur__libelle">Comptes utilisateurs</span>
+    </div>
+    <div class="compteur">
+      <span class="compteur__valeur numerique">{{ nombre_paroissiens }}</span>
+      <span class="compteur__libelle">Paroissiens</span>
+    </div>
+    <div class="compteur">
+      <span class="compteur__valeur numerique">{{ nombre_actes_sacrements }}</span>
+      <span class="compteur__libelle">Actes sacramentels</span>
+    </div>
+    <div class="compteur">
+      <span class="compteur__valeur numerique">{{ nombre_dons }}</span>
+      <span class="compteur__libelle">Dons enregistrés</span>
+    </div>
+  </div>
+</div>
+
+<form method="post" novalidate class="fiche">
+  {% csrf_token %}
+  <p>
+    Pour confirmer, retapez le nom exact de la paroisse :
+    <strong>{{ paroisse.nom }}</strong>
+  </p>
+  {% for champ in form %}
+    {% include "partials/_form_field.html" with champ=champ %}
+  {% endfor %}
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'plateforme:paroisse_detail' paroisse.pk %}">Annuler</a>
+    <button type="submit" class="bouton-danger">Supprimer définitivement</button>
+  </div>
+</form>
+{% endblock %}

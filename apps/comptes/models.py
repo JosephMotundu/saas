@@ -75,7 +75,7 @@ class Abonnement(models.Model):
     OFFRE_CHOICES = [
         ("essentiel", "Essentiel"),
         ("standard", "Standard"),
-        ("diocese", "Diocèse"),
+        ("pro", "Pro"),
     ]
 
     STATUT_CHOICES = [
@@ -100,7 +100,7 @@ class Abonnement(models.Model):
             "max_paroissiens": 2000,
             "modules": frozenset({"sacrements", "celebrations", "finances", "paroissiens"}),
         },
-        "diocese": {
+        "pro": {
             "prix_affiche": "Sur devis",
             "max_utilisateurs_supplementaires": None,
             "max_paroissiens": None,

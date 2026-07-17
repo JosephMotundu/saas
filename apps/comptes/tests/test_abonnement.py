@@ -28,11 +28,11 @@ def test_cure_peut_changer_d_offre(client, paroisse):
     cure = creer_cure(paroisse)
     client.force_login(cure)
 
-    reponse = client.post(reverse("comptes:abonnement"), {"offre": "diocese"})
+    reponse = client.post(reverse("comptes:abonnement"), {"offre": "pro"})
 
     assert reponse.status_code == 302
     paroisse.abonnement.refresh_from_db()
-    assert paroisse.abonnement.offre == "diocese"
+    assert paroisse.abonnement.offre == "pro"
 
 
 def test_cure_peut_annuler_puis_reactiver(client, paroisse):

@@ -55,8 +55,8 @@ def test_standard_autorise_paroissiens_mais_bloque_communication(client):
     assert client.get(reverse("communication:annonce_liste")).status_code == 302
 
 
-def test_diocese_autorise_tous_les_modules(client):
-    paroisse = _creer_paroisse_avec_offre("diocese")
+def test_pro_autorise_tous_les_modules(client):
+    paroisse = _creer_paroisse_avec_offre("pro")
     secretaire = _creer_utilisateur(paroisse, "Secrétaire", "secretaire1")
     client.force_login(secretaire)
 

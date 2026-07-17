@@ -253,9 +253,13 @@ Le projet est construit par étapes (voir brief).
   - **Essentiel** (15 $/mois) : Sacrements, Célébrations, Finances. Pas de
     Paroissiens ni Communication. Jusqu'à 3 utilisateurs en plus du Curé.
   - **Standard** (35 $/mois) : + Paroissiens (jusqu'à 2000 membres).
-    Utilisateurs illimités. Communication toujours exclue.
-  - **Diocèse** (sur devis) : tout illimité + Communication (et donc la
-    page publique des communiqués, qui en dépend).
+    Jusqu'à 7 utilisateurs en plus du Curé. Communication toujours exclue.
+  - **Pro** (sur devis) : tout illimité + Communication (et donc la page
+    publique des communiqués, qui en dépend). Renommée depuis « Diocèse »
+    (`comptes/migrations/0009_alter_abonnement_offre.py`, avec migration de
+    données pour les abonnements existants) — ce nom entrait en collision
+    avec `Paroisse.diocese`, un concept sans rapport (le diocèse de
+    rattachement de la paroisse), pas un palier d'abonnement.
   - `ModuleAutoriseMixin` (`apps/comptes/mixins.py`) bloque réellement les
     vues d'un module non inclus (redirection + message), pas seulement la
     navigation — appliqué à `paroissiens` et `communication`. Si une

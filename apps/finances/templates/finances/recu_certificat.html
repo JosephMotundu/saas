@@ -19,7 +19,7 @@
     <dt>Donateur</dt>
     <dd>{{ don.paroissien.nom_complet|default:"Don anonyme" }}</dd>
     <dt>Montant</dt>
-    <dd class="numerique">{{ don.montant }}</dd>
+    <dd class="numerique">{{ don.montant_affiche }}</dd>
     <dt>Type de don</dt>
     <dd>{{ don.get_type_don_display }}</dd>
     <dt>Mode de paiement</dt>

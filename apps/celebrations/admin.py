@@ -6,7 +6,7 @@ from .models import Celebration, IntentionMesse
 class IntentionMesseInline(admin.TabularInline):
     model = IntentionMesse
     extra = 0
-    fields = ("demandeur", "intention", "montant_offrande", "statut")
+    fields = ("demandeur", "intention", "montant_offrande", "devise", "statut")
 
 
 @admin.register(Celebration)
@@ -19,7 +19,7 @@ class CelebrationAdmin(admin.ModelAdmin):
 
 @admin.register(IntentionMesse)
 class IntentionMesseAdmin(admin.ModelAdmin):
-    list_display = ("demandeur", "intention", "statut", "montant_offrande", "celebration", "paroisse")
-    list_filter = ("paroisse", "statut")
+    list_display = ("demandeur", "intention", "statut", "montant_offrande", "devise", "celebration", "paroisse")
+    list_filter = ("paroisse", "statut", "devise")
     search_fields = ("demandeur", "intention")
     list_select_related = ("celebration", "paroisse")

@@ -587,7 +587,13 @@ a:hover {
   margin: 0;
 }
 
+/* Liens du compte (profil, équipe, abonnement, déconnexion…) : présentés
+   comme des onglets du thème, pas l'affichage par défaut du navigateur. Le
+   lien actif est signalé par une surbrillance de fond + un soulignement à la
+   couleur d'accent liturgique — comme les onglets de la barre latérale. */
+.barre-superieure__compte a,
 .lien-deconnexion {
+  display: inline-block;
   background: none;
   border: none;
   color: var(--brand);
@@ -595,8 +601,23 @@ a:hover {
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--rayon);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.barre-superieure__compte a:hover,
+.barre-superieure__compte a:focus-visible,
+.lien-deconnexion:hover,
+.lien-deconnexion:focus-visible {
+  background: var(--papier-releve);
+}
+
+.barre-superieure__compte a.est-actif {
+  background: var(--papier-releve);
+  border-bottom-color: var(--accent);
+  color: var(--brand);
 }
 
 .contenu-app {

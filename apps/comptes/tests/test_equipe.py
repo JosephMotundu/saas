@@ -160,6 +160,31 @@ def test_cure_peut_modifier_un_membre_et_son_role(client, paroisse):
     assert list(membre.groups.values_list("name", flat=True)) == ["Trésorier"]
 
 
+def test_un_membre_ne_peut_pas_etre_promu_cure(client, paroisse):
+    """Le Curé est unique par paroisse : on ne peut pas promouvoir un membre au
+    rôle de Curé via la modification d'équipe. Le rôle du membre reste inchangé."""
+    cure = creer_cure(paroisse)
+    membre = Utilisateur.objects.create_user(
+        username="secretaire1", password="mot-de-passe-test-123", paroisse=paroisse
+    )
+    membre.groups.add(Group.objects.get(name="Secrétaire"))
+    client.force_login(cure)
+
+    reponse = client.post(
+        reverse("comptes:equipe_modifier", args=[membre.pk]),
+        {
+            "prenom": "Nouveau",
+            "nom": "Nom",
+            "email": "nouveau@example.com",
+            "role": "Curé",
+        },
+    )
+
+    assert reponse.status_code == 200  # formulaire ré-affiché avec l'erreur
+    membre.refresh_from_db()
+    assert list(membre.groups.values_list("name", flat=True)) == ["Secrétaire"]
+
+
 def test_cure_ne_peut_pas_se_modifier_lui_meme_via_equipe(client, paroisse):
     cure = creer_cure(paroisse)
     client.force_login(cure)

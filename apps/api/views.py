@@ -88,6 +88,7 @@ class DonViewSet(IsolationParoisseMixin, viewsets.ModelViewSet):
         don, _recu = enregistrer_don_avec_recu(
             paroisse=self.exiger_paroisse(),
             montant=donnees["montant"],
+            devise=donnees.get("devise", "CDF"),
             date=donnees["date"],
             type_don=donnees["type_don"],
             mode_paiement=donnees["mode_paiement"],

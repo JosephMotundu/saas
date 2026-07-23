@@ -158,11 +158,12 @@ def test_limite_utilisateurs_standard(client):
     assert not Utilisateur.objects.filter(username="nouveau_membre").exists()
 
 
-def test_inviter_un_second_cure_ne_compte_pas_dans_la_limite(client):
+def test_inviter_un_second_cure_est_refuse(client):
+    """Une paroisse ne peut avoir qu'un seul Curé : « Curé » n'est pas un rôle
+    invitable, donc un POST tentant d'en créer un second est rejeté et aucun
+    compte n'est créé."""
     paroisse = _creer_paroisse_avec_offre("essentiel")
     cure = _creer_utilisateur(paroisse, "Curé", "cure1")
-    for i in range(3):
-        _creer_utilisateur(paroisse, "Lecteur", f"lecteur{i}")
     client.force_login(cure)
 
     reponse = client.post(
@@ -176,8 +177,8 @@ def test_inviter_un_second_cure_ne_compte_pas_dans_la_limite(client):
         },
     )
 
-    assert reponse.status_code == 200
-    assert Utilisateur.objects.filter(username="second_cure").exists()
+    assert reponse.status_code == 200  # formulaire ré-affiché avec l'erreur
+    assert not Utilisateur.objects.filter(username="second_cure").exists()
 
 
 def test_limite_paroissiens_standard(client):

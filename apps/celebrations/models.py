@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from apps.comptes.managers import creer_manager_paroisse
 from apps.comptes.models import Paroisse
+from apps.core.devises import DEVISE_CHOICES, formater_montant
 
 
 class Celebration(models.Model):
@@ -46,7 +47,10 @@ class IntentionMesse(models.Model):
     demandeur = models.CharField("demandeur", max_length=200)
     intention = models.CharField("intention", max_length=300)
     montant_offrande = models.DecimalField(
-        "montant de l'offrande", max_digits=10, decimal_places=2, null=True, blank=True
+        "montant de l'offrande", max_digits=12, decimal_places=2, null=True, blank=True
+    )
+    devise = models.CharField(
+        "devise", max_length=3, choices=DEVISE_CHOICES, default="CDF"
     )
     statut = models.CharField(
         "statut", max_length=20, choices=STATUT_CHOICES, default="en_attente"
@@ -68,6 +72,12 @@ class IntentionMesse(models.Model):
 
     def __str__(self):
         return f"{self.demandeur} — {self.intention}"
+
+    def offrande_affichee(self):
+        """Montant de l'offrande avec sa devise, ou « — » si non renseigné."""
+        if self.montant_offrande is None:
+            return "—"
+        return formater_montant(self.montant_offrande, self.devise)
 
     def get_absolute_url(self):
         return reverse("celebrations:intention_detail", args=[self.pk])

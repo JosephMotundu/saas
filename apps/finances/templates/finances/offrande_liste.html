@@ -1,36 +1,30 @@
 {% extends "base_app.html" %}
 
-{% block title %}Dons — ParoisseConnect{% endblock %}
+{% block title %}Offrandes de messe — ParoisseConnect{% endblock %}
 
 {% block content %}
 <div class="barre-actions">
-  <h1>Dons</h1>
-  <a class="bouton-principal" href="{% url 'finances:don_creer' %}">Enregistrer un don</a>
+  <h1>Offrandes de messe</h1>
+  <a class="bouton-principal" href="{% url 'finances:offrande_creer' %}">Enregistrer une offrande</a>
 </div>
 
-{% if dons %}
+{% if offrandes %}
 <table class="table-registre">
   <thead>
     <tr>
-      <th scope="col">Donateur</th>
-      <th scope="col">Montant</th>
-      <th scope="col">Type</th>
+      <th scope="col">Libellé</th>
       <th scope="col">Mode de paiement</th>
+      <th scope="col">Montant</th>
       <th scope="col">Date</th>
     </tr>
   </thead>
   <tbody>
-    {% for don in dons %}
+    {% for offrande in offrandes %}
     <tr>
-      <td>
-        <a href="{% url 'finances:don_detail' don.pk %}">
-          {{ don.paroissien.nom_complet|default:"Don anonyme" }}
-        </a>
-      </td>
-      <td class="numerique">{{ don.montant_affiche }}</td>
-      <td><span class="etiquette">{{ don.get_type_don_display }}</span></td>
-      <td>{{ don.get_mode_paiement_display }}</td>
-      <td class="numerique">{{ don.date }}</td>
+      <td><a href="{% url 'finances:offrande_detail' offrande.pk %}">{{ offrande.libelle|default:"Offrande de messe" }}</a></td>
+      <td>{{ offrande.get_mode_paiement_display }}</td>
+      <td class="numerique">{{ offrande.montant_affiche }}</td>
+      <td class="numerique">{{ offrande.date }}</td>
     </tr>
     {% endfor %}
   </tbody>
@@ -49,6 +43,6 @@
 {% endif %}
 
 {% else %}
-<p class="etat-vide">Aucun don enregistré pour l'instant. Enregistrez le premier.</p>
+<p class="etat-vide">Aucune offrande de messe enregistrée. Enregistrez la première après le comptage de la quête.</p>
 {% endif %}
 {% endblock %}

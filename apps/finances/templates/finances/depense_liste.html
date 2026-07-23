@@ -1,0 +1,52 @@
+{% extends "base_app.html" %}
+
+{% block title %}Dépenses — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Dépenses</h1>
+  <a class="bouton-principal" href="{% url 'finances:depense_creer' %}">Enregistrer une dépense</a>
+</div>
+
+{% if depenses %}
+<table class="table-registre">
+  <thead>
+    <tr>
+      <th scope="col">Libellé</th>
+      <th scope="col">Catégorie</th>
+      <th scope="col">Bénéficiaire</th>
+      <th scope="col">Mode de paiement</th>
+      <th scope="col">Montant</th>
+      <th scope="col">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for depense in depenses %}
+    <tr>
+      <td><a href="{% url 'finances:depense_detail' depense.pk %}">{{ depense.libelle }}</a></td>
+      <td><span class="etiquette">{{ depense.get_categorie_display }}</span></td>
+      <td>{{ depense.beneficiaire|default:"—" }}</td>
+      <td>{{ depense.get_mode_paiement_display }}</td>
+      <td class="numerique">{{ depense.montant_affiche }}</td>
+      <td class="numerique">{{ depense.date }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination-registre">
+  {% if page_obj.has_previous %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+  {% endif %}
+  <span class="numerique">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="bouton-secondaire" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p class="etat-vide">Aucune dépense enregistrée pour l'instant. Enregistrez la première.</p>
+{% endif %}
+{% endblock %}

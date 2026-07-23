@@ -1,0 +1,66 @@
+{% extends "base_app.html" %}
+
+{% block title %}Finances — ParoisseConnect{% endblock %}
+
+{% block content %}
+<div class="barre-actions">
+  <h1>Finances</h1>
+  <div class="actions-fiche">
+    <a class="bouton-secondaire" href="{% url 'finances:don_liste' %}">Dons</a>
+    <a class="bouton-secondaire" href="{% url 'finances:offrande_liste' %}">Offrandes de messe</a>
+    <a class="bouton-secondaire" href="{% url 'finances:depense_liste' %}">Dépenses</a>
+  </div>
+</div>
+
+{% if situation.par_devise %}
+{% for devise in situation.par_devise %}
+<h2>Solde en {{ devise.libelle }}</h2>
+<div class="compteurs">
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ devise.recettes }} {{ devise.symbole }}</span>
+    <span class="compteur__libelle">Total des recettes</span>
+  </div>
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ devise.depenses }} {{ devise.symbole }}</span>
+    <span class="compteur__libelle">Total des dépenses</span>
+  </div>
+  <div class="compteur">
+    <span class="compteur__valeur numerique">{{ devise.solde }} {{ devise.symbole }}</span>
+    <span class="compteur__libelle">Solde</span>
+  </div>
+</div>
+<table class="table-registre">
+  <thead>
+    <tr><th scope="col">Source des recettes</th><th scope="col">Montant</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Dons</td><td class="numerique">{{ devise.dons }} {{ devise.symbole }}</td></tr>
+    <tr><td>Offrandes de messe</td><td class="numerique">{{ devise.offrandes_messe }} {{ devise.symbole }}</td></tr>
+    <tr><td>Offrandes des intentions</td><td class="numerique">{{ devise.offrandes_intentions }} {{ devise.symbole }}</td></tr>
+  </tbody>
+</table>
+{% endfor %}
+{% else %}
+<p class="etat-vide">Aucun mouvement financier pour l'instant. Enregistrez une recette ou une dépense.</p>
+{% endif %}
+
+<h2>Dépenses par catégorie</h2>
+{% if situation.depenses_par_categorie %}
+<table class="table-registre">
+  <thead>
+    <tr><th scope="col">Catégorie</th><th scope="col">Devise</th><th scope="col">Montant</th></tr>
+  </thead>
+  <tbody>
+    {% for ligne in situation.depenses_par_categorie %}
+    <tr>
+      <td>{{ ligne.categorie|capfirst }}</td>
+      <td>{{ ligne.devise }}</td>
+      <td class="numerique">{{ ligne.total }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="etat-vide">Aucune dépense pour l'instant.</p>
+{% endif %}
+{% endblock %}

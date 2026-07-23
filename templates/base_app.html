@@ -40,7 +40,7 @@
         {% endif %}
         {% if nav_finances %}
         <li>
-          <a href="{% url 'finances:don_liste' %}"
+          <a href="{% url 'finances:tableau' %}"
              class="{% if request.resolver_match.app_name == 'finances' %}est-actif{% endif %}">
             Finances
           </a>
@@ -64,10 +64,15 @@
         {{ request.user.paroisse.nom|default:"ParoisseConnect" }}
       </span>
       <div class="barre-superieure__compte">
-        <a href="{% url 'comptes:profil' %}">{{ request.user.get_full_name|default:request.user.username }}</a>
+        <a href="{% url 'comptes:profil' %}"
+           class="{% if request.resolver_match.view_name == 'comptes:profil' %}est-actif{% endif %}">
+          {{ request.user.get_full_name|default:request.user.username }}
+        </a>
         {% if est_cure %}
-          <a href="{% url 'comptes:equipe' %}">Équipe</a>
-          <a href="{% url 'comptes:abonnement' %}">Abonnement</a>
+          <a href="{% url 'comptes:equipe' %}"
+             class="{% if request.resolver_match.view_name == 'comptes:equipe' %}est-actif{% endif %}">Équipe</a>
+          <a href="{% url 'comptes:abonnement' %}"
+             class="{% if request.resolver_match.view_name == 'comptes:abonnement' %}est-actif{% endif %}">Abonnement</a>
         {% endif %}
         <form class="forme-deconnexion" method="post" action="{% url 'comptes:deconnexion' %}">
           {% csrf_token %}

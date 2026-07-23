@@ -1,0 +1,24 @@
+{% extends "base_app.html" %}
+
+{% block title %}Offrande de messe — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Offrande de messe</h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Libellé</dt>
+    <dd>{{ offrande.libelle|default:"Offrande de messe" }}</dd>
+    <dt>Montant</dt>
+    <dd class="numerique">{{ offrande.montant_affiche }}</dd>
+    <dt>Mode de paiement</dt>
+    <dd>{{ offrande.get_mode_paiement_display }}</dd>
+    <dt>Date</dt>
+    <dd class="numerique">{{ offrande.date }}</dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'finances:offrande_liste' %}">Retour à la liste</a>
+</div>
+{% endblock %}

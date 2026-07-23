@@ -12,7 +12,7 @@
     <dt>Intention</dt>
     <dd>{{ intention.intention }}</dd>
     <dt>Offrande</dt>
-    <dd class="numerique">{{ intention.montant_offrande|default:"—" }}</dd>
+    <dd class="numerique">{{ intention.offrande_affichee }}</dd>
     <dt>Statut</dt>
     <dd><span class="etiquette">{{ intention.get_statut_display }}</span></dd>
     <dt>Célébration</dt>

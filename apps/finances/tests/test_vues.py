@@ -35,6 +35,7 @@ def test_tresorier_peut_enregistrer_un_don_anonyme(client, paroisse):
         reverse("finances:don_creer"),
         {
             "montant": "25",
+            "devise": "USD",
             "date": "2026-03-01",
             "type_don": "offrande",
             "mode_paiement": "especes",

@@ -6,9 +6,10 @@
 <header class="barre-superieure">
   <a class="entete__marque" href="{% url 'plateforme:paroisse_liste' %}">ParoisseConnect — Plateforme</a>
   <div class="barre-superieure__compte">
-    <a href="{% url 'plateforme:paroisse_liste' %}">Paroisses</a>
-    <a href="{% url 'plateforme:vitrine_modifier' %}">Vitrine</a>
-    <a href="{% url 'admin:index' %}">Admin Django</a>
+    <a href="{% url 'plateforme:paroisse_liste' %}"
+       class="{% if request.resolver_match.app_name == 'plateforme' and request.resolver_match.url_name != 'vitrine_modifier' %}est-actif{% endif %}">Paroisses</a>
+    <a href="{% url 'plateforme:vitrine_modifier' %}"
+       class="{% if request.resolver_match.url_name == 'vitrine_modifier' %}est-actif{% endif %}">Vitrine</a>
     <span>{{ request.user.get_full_name|default:request.user.username }}</span>
     <form class="forme-deconnexion" method="post" action="{% url 'comptes:deconnexion' %}">
       {% csrf_token %}

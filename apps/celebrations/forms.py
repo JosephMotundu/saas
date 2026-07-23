@@ -16,7 +16,7 @@ class CelebrationForm(forms.ModelForm):
 class IntentionMesseForm(forms.ModelForm):
     class Meta:
         model = IntentionMesse
-        fields = ["celebration", "demandeur", "intention", "montant_offrande", "statut"]
+        fields = ["celebration", "demandeur", "intention", "montant_offrande", "devise", "statut"]
 
     def __init__(self, *args, paroisse=None, **kwargs):
         super().__init__(*args, **kwargs)

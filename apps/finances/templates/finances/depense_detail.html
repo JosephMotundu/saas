@@ -1,0 +1,28 @@
+{% extends "base_app.html" %}
+
+{% block title %}Dépense — ParoisseConnect{% endblock %}
+
+{% block content %}
+<h1>Dépense</h1>
+
+<div class="fiche">
+  <dl>
+    <dt>Libellé</dt>
+    <dd>{{ depense.libelle }}</dd>
+    <dt>Montant</dt>
+    <dd class="numerique">{{ depense.montant_affiche }}</dd>
+    <dt>Catégorie</dt>
+    <dd><span class="etiquette">{{ depense.get_categorie_display }}</span></dd>
+    <dt>Mode de paiement</dt>
+    <dd>{{ depense.get_mode_paiement_display }}</dd>
+    <dt>Bénéficiaire</dt>
+    <dd>{{ depense.beneficiaire|default:"—" }}</dd>
+    <dt>Date</dt>
+    <dd class="numerique">{{ depense.date }}</dd>
+  </dl>
+</div>
+
+<div class="actions-fiche">
+  <a class="bouton-secondaire" href="{% url 'finances:depense_liste' %}">Retour à la liste</a>
+</div>
+{% endblock %}

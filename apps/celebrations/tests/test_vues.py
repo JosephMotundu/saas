@@ -63,6 +63,7 @@ def test_secretaire_peut_creer_une_intention(client, paroisse):
             "demandeur": "Famille Mbala",
             "intention": "Action de grâce",
             "montant_offrande": "10",
+            "devise": "CDF",
             "statut": "en_attente",
         },
     )

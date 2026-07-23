@@ -27,7 +27,7 @@
     <tr>
       <td><a href="{% url 'celebrations:intention_detail' intention.pk %}">{{ intention.demandeur }}</a></td>
       <td>{{ intention.intention }}</td>
-      <td class="numerique">{{ intention.montant_offrande|default:"—" }}</td>
+      <td class="numerique">{{ intention.offrande_affichee }}</td>
       <td><span class="etiquette">{{ intention.get_statut_display }}</span></td>
     </tr>
     {% endfor %}

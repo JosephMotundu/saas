@@ -48,8 +48,12 @@ class ProfilForm(forms.ModelForm):
         labels = {"first_name": "Prénom", "last_name": "Nom", "email": "Email"}
 
 
+# Le Curé est unique par paroisse : il est créé à l'inscription de la paroisse
+# et ne peut jamais être ajouté via la gestion d'équipe. On n'invite (et on ne
+# promeut) donc que des collaborateurs. « Curé » étant absent de cette liste, le
+# ChoiceField des formulaires rejette toute tentative de créer un second Curé,
+# y compris un POST forgé.
 ROLES_INVITABLES = [
-    ("Curé", "Curé"),
     ("Secrétaire", "Secrétaire"),
     ("Trésorier", "Trésorier"),
     ("Lecteur", "Lecteur"),

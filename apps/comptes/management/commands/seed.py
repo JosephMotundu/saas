@@ -7,6 +7,7 @@ from django.db import transaction
 from apps.celebrations.models import Celebration, IntentionMesse
 from apps.communication.models import Annonce
 from apps.comptes.models import Abonnement, Paroisse, Utilisateur
+from apps.finances.models import Depense, OffrandeMesse
 from apps.finances.services import enregistrer_don_avec_recu
 from apps.paroissiens.models import Famille, Paroissien
 from apps.sacrements.models import Bapteme
@@ -121,17 +122,55 @@ class Command(BaseCommand):
             demandeur="Famille Mbala",
             celebration=celebration,
             paroisse=paroisse,
-            defaults=dict(intention="Action de grâce", montant_offrande=10),
+            defaults=dict(intention="Action de grâce", montant_offrande=10, devise="USD"),
         )
 
-        if not paroisse.dons.exists():
-            enregistrer_don_avec_recu(
-                paroisse=paroisse,
-                montant=25,
+        # Démo en deux devises (§ finances : un solde par devise). On garde le
+        # jeu idempotent par devise : relancer `seed` complète les mouvements
+        # manquants sans dupliquer ceux déjà présents.
+        dons_demo = [
+            (25000, "CDF", "offrande", "especes"),
+            (50, "USD", "dime", "mobile_money"),
+        ]
+        for montant, devise, type_don, mode in dons_demo:
+            if not paroisse.dons.filter(devise=devise).exists():
+                enregistrer_don_avec_recu(
+                    paroisse=paroisse,
+                    montant=montant,
+                    devise=devise,
+                    date=datetime.date.today(),
+                    type_don=type_don,
+                    mode_paiement=mode,
+                    paroissien=paroissien,
+                )
+
+        OffrandeMesse.objects.get_or_create(
+            paroisse=paroisse,
+            libelle="Quête messe dominicale",
+            defaults=dict(
+                montant=8000,
+                devise="CDF",
                 date=datetime.date.today(),
-                type_don="offrande",
                 mode_paiement="especes",
-                paroissien=paroissien,
+            ),
+        )
+
+        depenses_demo = [
+            ("Facture d'électricité", 45000, "CDF", "charges", "virement"),
+            ("Achat de cierges et hosties", 20, "USD", "liturgie", "especes"),
+            ("Réparation de la toiture", 120, "USD", "entretien", "mobile_money"),
+        ]
+        for libelle, montant, devise, categorie, mode in depenses_demo:
+            Depense.objects.get_or_create(
+                paroisse=paroisse,
+                libelle=libelle,
+                defaults=dict(
+                    montant=montant,
+                    devise=devise,
+                    date=datetime.date.today(),
+                    categorie=categorie,
+                    mode_paiement=mode,
+                ),
             )
 
         cure = Utilisateur.objects.get(username="cure")
